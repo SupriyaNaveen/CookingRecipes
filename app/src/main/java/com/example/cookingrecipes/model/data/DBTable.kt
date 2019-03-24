@@ -1,13 +1,12 @@
 package com.example.cookingrecipes.model.data
 
-import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-@Entity(tableName = "recipes", indices = [Index(value = ["recipeLink"], unique = true)])
+//TODO : indices = [Index(value = ["recipeLink"], unique = true)]
+@Entity(tableName = "recipes")
 data class CookingRecipes(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")

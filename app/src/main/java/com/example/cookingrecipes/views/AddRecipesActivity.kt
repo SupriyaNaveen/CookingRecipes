@@ -1,9 +1,12 @@
 package com.example.cookingrecipes.views
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.cookingrecipes.R
 import com.example.cookingrecipes.model.data.CookingRecipes
@@ -17,7 +20,7 @@ import javax.inject.Inject
 
 class AddRecipesActivity : BaseActivity() {
 
-    lateinit var mRecipesAddViewModel: AddRecipesViewModel
+    private lateinit var mRecipesAddViewModel: AddRecipesViewModel
 
     @Inject
     lateinit var mAddRecipesViewModelFactory: AddRecipesViewModelFactory
@@ -35,26 +38,70 @@ class AddRecipesActivity : BaseActivity() {
             AddRecipesViewModel::class.java
         )
 
+        mRecipesAddViewModel.recipesAddResult().observe(
+            this,
+            Observer<Long> {
+                if (it > 0) {
+                    val cookingRecipes = CookingRecipes(
+                        id = it.toInt(),
+                        recipeName = text_view_recipe_name.text.toString(),
+                        recipeLink = text_view_recipes_link.text.toString(),
+                        recipeDescription = text_view_recipes_description.text.toString()
+                    )
+                    showRecipesAddedMessage(cookingRecipes)
+                } else {
+
+                }
+            }
+        )
+
+        mRecipesAddViewModel.recipesAddError().observe(this, Observer<String> {
+            if (it != null) {
+                Toast.makeText(
+                    this, resources.getString(R.string.error_message_get_recipes_failed) + it,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
         button_add_recipes.setOnClickListener { v: View? ->
 
             val isValidInput = isValidInput()
             if (isValidInput) {
-                var cookingRecipes = CookingRecipes(
+                val cookingRecipes = CookingRecipes(
                     recipeName = text_view_recipe_name.text.toString(),
                     recipeLink = text_view_recipes_link.text.toString(),
                     recipeDescription = text_view_recipes_description.text.toString()
                 )
-                mRecipesAddViewModel.addRecipesToDb(cookingRecipes)
-                text_view_recipe_name.text?.clear()
-                text_view_recipes_link.text?.clear()
-                text_view_recipes_description.text?.clear()
-                //TODO Result of insert db query check
-                val intent = Intent()
-                intent.putExtra(Constants.ADDED_RECIPES, cookingRecipes)
-                setResult(Activity.RESULT_OK, intent)
-                finish()//finishing activity
+                mRecipesAddViewModel.addRecipesDetails(cookingRecipes)
+
             }
         }
+    }
+
+    private fun showRecipesAddedMessage(cookingRecipes: CookingRecipes) {
+        val builder = AlertDialog.Builder(this)
+
+        // Set the alert dialog title
+        builder.setTitle("Recipes")
+
+        // Display a message on alert dialog
+        builder.setMessage("Cooking Recipes added successfully")
+
+        // Set a positive button and its click listener on alert dialog
+        builder.setPositiveButton("Done") { dialog, which ->
+            // Do something when user press the positive button
+            val intent = Intent()
+            intent.putExtra(Constants.ADDED_RECIPES, cookingRecipes)
+            setResult(Activity.RESULT_OK, intent)
+            finish()//finishing activity
+        }
+
+        // Finally, make the alert dialog using builder
+        val dialog: AlertDialog = builder.create()
+
+        // Display the alert dialog on app interface
+        dialog.show()
     }
 
     private fun isValidInput(): Boolean {
@@ -70,7 +117,7 @@ class AddRecipesActivity : BaseActivity() {
             text_view_recipes_link.error = getString(R.string.fld_error_recipes_link)
             isValid = false
         } else {
-            text_view_recipes_link.setError(null)
+            text_view_recipes_link.error = null
         }
 
         return isValid
