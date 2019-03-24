@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Recipes Book</string>
+    <string name="action_settings">Settings</string>
+    <string name="string_add_recipes">Add Recipes</string>
+    <string name="error_message_get_recipes_failed">Get recipes failed :</string>
+    <string name="recipes_details">Recipes Details</string>
+    <string name="recipes_category_items">Recipes Categories</string>
+    <string name="lbl_recipes_name">Recipes Name</string>
+    <string name="colon">:</string>
+    <string name="lbl_recipes_link">Recipes Link</string>
+    <string name="add_recipes">Add Recipes</string>
+    <string name="lbl_recipes_desc">Recipes description</string>
+    <string name="fld_error_recipe_name">Please enter recipe name</string>
+    <string name="fld_error_recipes_link">Please enter recipes link</string>
+    <string name="recipes_play_url">Play your recipes</string>
+</resources>
