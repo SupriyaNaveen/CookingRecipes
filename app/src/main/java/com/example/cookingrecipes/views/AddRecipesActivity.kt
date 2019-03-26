@@ -4,8 +4,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.cookingrecipes.R
@@ -15,16 +15,30 @@ import com.example.cookingrecipes.viewmodel.AddRecipesViewModel
 import com.example.cookingrecipes.viewmodel.AddRecipesViewModelFactory
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_recipes_add.*
+import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * Add recipes activity, allows the user to add CookingRecipes.
+ * Recipes name, youtube link, desciption entered are added to local DB.
+ * TODO: Add Rrecipes to REST API.
+ */
+class AddRecipesActivity : AppCompatActivity() {
 
-class AddRecipesActivity : BaseActivity() {
-
+    //Init view model
     private lateinit var mRecipesAddViewModel: AddRecipesViewModel
 
+    //Inject view model factory
     @Inject
     lateinit var mAddRecipesViewModelFactory: AddRecipesViewModelFactory
 
+    /**
+     * Activity created : set view.
+     * Init view model.
+     * Handle recipes add query result and update UI(Show dialog and finish).
+     * Handle recipes add error scenarios.
+     * Invoke add recipes on add button selection.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
 
@@ -50,7 +64,7 @@ class AddRecipesActivity : BaseActivity() {
                     )
                     showRecipesAddedMessage(cookingRecipes)
                 } else {
-
+                    Timber.d("Row inserted id : $it")
                 }
             }
         )
@@ -64,7 +78,7 @@ class AddRecipesActivity : BaseActivity() {
             }
         })
 
-        button_add_recipes.setOnClickListener { v: View? ->
+        button_add_recipes.setOnClickListener {
 
             val isValidInput = isValidInput()
             if (isValidInput) {
@@ -79,20 +93,23 @@ class AddRecipesActivity : BaseActivity() {
         }
     }
 
+    /**
+     * Alert dialog to show the reciped added successfully.
+     */
     private fun showRecipesAddedMessage(cookingRecipes: CookingRecipes) {
         val builder = AlertDialog.Builder(this)
 
         // Set the alert dialog title
-        builder.setTitle("Recipes")
+        builder.setTitle(getString(R.string.recipes))
 
         // Display a message on alert dialog
-        builder.setMessage("Cooking Recipes added successfully")
+        builder.setMessage(getString(R.string.add_recipes_success_message))
 
         // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton("Done") { dialog, which ->
+        builder.setPositiveButton(getString(R.string.done)) { _, _ ->
             // Do something when user press the positive button
             val intent = Intent()
-            intent.putExtra(Constants.ADDED_RECIPES, cookingRecipes)
+            intent.putExtra(Constants.ADDED_RECIPES_INTENT_KEY, cookingRecipes)
             setResult(Activity.RESULT_OK, intent)
             finish()//finishing activity
         }
@@ -104,6 +121,9 @@ class AddRecipesActivity : BaseActivity() {
         dialog.show()
     }
 
+    /**
+     * Validate the add recipes input.
+     */
     private fun isValidInput(): Boolean {
         var isValid = true
         if (text_view_recipe_name.text.toString().isEmpty()) {
@@ -121,5 +141,10 @@ class AddRecipesActivity : BaseActivity() {
         }
 
         return isValid
+    }
+
+    override fun onDestroy() {
+        mRecipesAddViewModel.disposeElements()
+        super.onDestroy()
     }
 }

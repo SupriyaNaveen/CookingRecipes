@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
+/**
+ * Cooking Recipes data class
+ */
 //TODO : indices = [Index(value = ["recipeLink"], unique = true)]
 @Entity(tableName = "recipes")
 data class CookingRecipes(
@@ -12,13 +15,16 @@ data class CookingRecipes(
     @ColumnInfo(name = "id")
     val id: Int? = null,
     @ColumnInfo(name = "recipeName")
-    val recipeName: String ?= null,
+    var recipeName: String? = null,
     @ColumnInfo(name = "recipeLink")
     val recipeLink: String ?= null,
     @ColumnInfo(name = "recipeDescription")
-    val recipeDescription: String ?= null
+    var recipeDescription: String? = null
 ):Serializable
 
+/**
+ * Category data class
+ */
 @Entity(tableName = "category")
 data class Category(
     @PrimaryKey

@@ -6,12 +6,15 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 /**
- *
+ * Repository module for handling data operations of Adding Recipes.
  */
 class AddRecipesModel @Inject constructor(
     private val recipesDao: RecipesDao
 ) {
 
+    /**
+     * Add recipes data.
+     */
     fun addRecipesData(cookingRecipes: CookingRecipes): Single<Long>? {
         return Single.fromCallable<Long> { recipesDao.insert(cookingRecipes) }
     }

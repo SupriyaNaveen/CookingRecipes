@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,9 +23,8 @@ import javax.inject.Inject
 /**
  * Activity lists all recipes in Local DB
  * TODO: Web api creation and integration to application
- * Whenever view onStart(), load DB data.
  */
-class RecipesActivity : BaseActivity() {
+class RecipesActivity : AppCompatActivity() {
 
     //Initialize variable before accessing it
     @Inject
@@ -33,14 +33,17 @@ class RecipesActivity : BaseActivity() {
     lateinit var mRecipesViewModel: RecipesViewModel
     var currentPage = 0
 
+    /**
+     * List of recipes displayed.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipes)
 
-        button_add_recipes.setOnClickListener { v:View ->
-            var intent = Intent(this, AddRecipesActivity::class.java)
+        button_add_recipes.setOnClickListener {
+            val intent = Intent(this, AddRecipesActivity::class.java)
             startActivityForResult(intent, Constants.REQUEST_CODE_ADD_RECIPES)
         }
 
@@ -80,6 +83,9 @@ class RecipesActivity : BaseActivity() {
 
     }
 
+    /**
+     * Initialise the recycler view adapter.
+     */
     private fun initializeRecycler() {
         val gridLayoutManager = GridLayoutManager(this, 1)
         gridLayoutManager.orientation = RecyclerView.VERTICAL
@@ -90,28 +96,52 @@ class RecipesActivity : BaseActivity() {
         }
     }
 
+    /**
+     * Load recipes
+     */
     private fun loadData() {
         mRecipesViewModel.loadRecipes(Constants.LIMIT, currentPage * Constants.OFFSET)
         currentPage++
     }
 
+    /**
+     * Handle onActivityResult.
+     * Check if result is add, delete or update. Accordingly update adapter.
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == Constants.REQUEST_CODE_ADD_RECIPES) {
-            // Make sure the request was successful
             if (resultCode == Activity.RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
-
                 val position = mRecipesAdapter.itemCount
                 if (data != null) {
-                    mRecipesAdapter.addRecipesData(data.extras.get(Constants.ADDED_RECIPES) as CookingRecipes)
+                    mRecipesAdapter.addRecipesData(data.extras?.get(Constants.ADDED_RECIPES_INTENT_KEY) as CookingRecipes)
+                    recycler_view_recipes.adapter = mRecipesAdapter
+                    recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
+                }
+            }
+        } else if (requestCode == Constants.REQUEST_CODE_RECIPES_DETAILS) {
+            if (resultCode == Constants.RESULT_CODE_DELETE) {
+                val position = mRecipesAdapter.itemCount
+                if (data != null) {
+                    mRecipesAdapter.deleteRecipesData(data.extras?.get(Constants.DELETED_RECIPES_INTENT_KEY) as CookingRecipes)
+                    recycler_view_recipes.adapter = mRecipesAdapter
+                    recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
+                }
+            } else if (resultCode == Constants.RESULT_CODE_UPDATE) {
+                val position = mRecipesAdapter.itemCount
+                if (data != null) {
+                    mRecipesAdapter.updateRecipesData(data.extras?.get(Constants.UPDATED_RECIPES_INTENT_KEY) as CookingRecipes)
                     recycler_view_recipes.adapter = mRecipesAdapter
                     recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
                 }
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        mRecipesViewModel.disposeElements()
+        super.onDestroy()
     }
 }

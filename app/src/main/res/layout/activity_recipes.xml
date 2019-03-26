@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_recipes"
@@ -12,14 +13,18 @@
 
     <ProgressBar
             android:id="@+id/progress_bar"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
-    <Button
-            android:text="@string/add_recipes"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_anchorGravity="center"
+            app:layout_anchor="@id/recycler_view_recipes"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button_add_recipes"
-            android:layout_alignParentBottom="true"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            style="@style/floating_action_button"
+            android:src="@drawable/ic_add_white_24dp"
+            app:layout_anchorGravity="right|bottom"
+            app:layout_anchor="@+id/recycler_view_recipes"/>
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -9,7 +9,7 @@ class AddRecipesViewModelFactory @Inject constructor(
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AddRecipesViewModel::class.java!!)) {
+        if (modelClass.isAssignableFrom(AddRecipesViewModel::class.java)) {
             return addRecipesViewModel as T
         }
         throw IllegalArgumentException("Unknown class name")
