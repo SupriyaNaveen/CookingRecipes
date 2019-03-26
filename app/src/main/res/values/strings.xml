@@ -12,5 +12,12 @@
     <string name="lbl_recipes_desc">Recipes description</string>
     <string name="fld_error_recipe_name">Please enter recipe name</string>
     <string name="fld_error_recipes_link">Please enter recipes link</string>
-    <string name="recipes_play_url">Play your recipes</string>
+    <string name="recipes_play_url">Recipes Link</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_update">Update</string>
+    <string name="error_message_up_to_date">Recipes details up to date.</string>
+    <string name="recipes">Recipes</string>
+    <string name="add_recipes_success_message">Cooking recipes added successfully.</string>
+    <string name="done">Done</string>
+    <string name="error_add_recipes">Recipes link already exists.</string>
 </resources>

@@ -1,13 +1,12 @@
 package com.example.cookingrecipes.model.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.cookingrecipes.model.data.CookingRecipes
-import io.reactivex.Completable
 import io.reactivex.Single
 
+/**
+ * The Data Access Object for the CookingRecipes class.
+ */
 @Dao
 interface RecipesDao {
 
@@ -15,7 +14,16 @@ interface RecipesDao {
     fun getRecipes(): Single<List<CookingRecipes>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(recipes: CookingRecipes)
+    fun insert(recipes: CookingRecipes): Long
+
+    @Insert(onConflict = OnConflictStrategy.FAIL)
+    fun insertManual(recipes: CookingRecipes): Long
+
+    @Delete
+    fun delete(cookingRecipes: CookingRecipes): Int
+
+    @Update
+    fun update(cookingRecipes: CookingRecipes): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(recipesList: List<CookingRecipes>)

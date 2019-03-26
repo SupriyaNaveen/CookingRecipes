@@ -15,7 +15,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="@dimen/dp10"
-                android:drawableStart="@drawable/ic_menu_gallery"
+                android:drawableStart="@drawable/ic_kitchen_black_24dp"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLines="1"/>
@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="@dimen/dp10"
-                android:drawableStart="@drawable/ic_menu_gallery"
+                android:drawableStart="@drawable/ic_kitchen_black_24dp"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLines="1"/>
@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="@dimen/dp10"
-                android:drawableStart="@drawable/ic_menu_gallery"
+                android:drawableStart="@drawable/ic_kitchen_black_24dp"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLines="1"/>

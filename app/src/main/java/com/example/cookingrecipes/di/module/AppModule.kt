@@ -16,7 +16,11 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-
+/**
+ * class annotated with @Module, which will receive the application instance via constructor,
+ * store it in a property, and return it using a method annotated with @Provides @Singleton
+ * App related instance provider.
+ */
 @Module
 class AppModule(val app: Application) {
 

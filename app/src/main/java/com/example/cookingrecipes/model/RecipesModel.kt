@@ -1,6 +1,6 @@
 package com.example.cookingrecipes.model
 
-import android.util.Log
+import android.annotation.SuppressLint
 import com.example.cookingrecipes.model.api.RestApi
 import com.example.cookingrecipes.model.data.CookingRecipes
 import com.example.cookingrecipes.model.db.RecipesDao
@@ -11,7 +11,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 /**
- *
+ * Repository module for handling data operations of Recipes.
+ * Get recipes from REST API and update local DB.
+ * Get recipes from Local DB for given offset, limit.
  */
 class RecipesModel @Inject constructor(
     private val restApi: RestApi,
@@ -20,7 +22,7 @@ class RecipesModel @Inject constructor(
 ) {
 
     /**
-     *
+     * Get recipes from web API.
      */
     private fun getRecipesFromApi(): Observable<List<CookingRecipes>> {
         return restApi.getRecipes()
@@ -31,40 +33,49 @@ class RecipesModel @Inject constructor(
     }
 
     /**
-     *
+     * Store all recipes details to local DB.
      */
-    fun storeRecipesInDb(recipes: List<CookingRecipes>) {
+    @SuppressLint("CheckResult")
+    private fun storeRecipesInDb(recipes: List<CookingRecipes>) {
         Observable.fromCallable { recipesDao.insertAll(recipes) }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe {
-                Timber.d("Inserted $it users from API in DB...")
+                if (it != null) {
+                    Timber.d("Inserted $it users from API in DB...")
+                }
             }
     }
 
+    /**
+     * Get recipes for given limit.
+     * Check for internet connection,
+     * If yes, then fetch recipes from both API and locan DB.
+     */
     fun getRecipesOnLimit(limit: Int, offset: Int): Observable<List<CookingRecipes>> {
-        val hasConnection = utils.isConnectedToInternet()
-        var observableFromApi: Observable<List<CookingRecipes>>? = null
+//        val hasConnection = utils.isConnectedToInternet()
+//        var observableFromApi: Observable<List<CookingRecipes>>? = null
 //        TODO("Web api should be called after api created")
 //        if (hasConnection) {
 //            observableFromApi = getRecipesFromApi()
 //        }
-        val observableFromDb = getRecipesFromDb(limit, offset)
 
-        return if (hasConnection && observableFromApi != null) Observable.concatArrayEager(
-            observableFromApi,
-            observableFromDb
-        )
-        else
-            return observableFromDb
+//        return if (hasConnection && observableFromApi != null) Observable.concatArrayEager(
+//            observableFromApi,
+//            observableFromDb
+//        )
+//        else
+        return getRecipesFromDb(limit, offset)
     }
 
+    /**
+     * Get recipes from local DB.
+     */
     private fun getRecipesFromDb(limit: Int, offset: Int): Observable<List<CookingRecipes>> {
         return recipesDao.queryRecipesOnLimit(limit, offset)
             .toObservable()
             .doOnNext {
-                //Print log it.size :)
-                Log.e("REPOSITORY DB *** ", it.size.toString())
+                Timber.d(it.size.toString())
             }
     }
 }

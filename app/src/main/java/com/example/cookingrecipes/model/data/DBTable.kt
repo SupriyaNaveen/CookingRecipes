@@ -1,25 +1,30 @@
 package com.example.cookingrecipes.model.data
 
-import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
+/**
+ * Cooking Recipes data class
+ */
 @Entity(tableName = "recipes", indices = [Index(value = ["recipeLink"], unique = true)])
 data class CookingRecipes(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int? = null,
     @ColumnInfo(name = "recipeName")
-    val recipeName: String ?= null,
+    var recipeName: String? = null,
     @ColumnInfo(name = "recipeLink")
-    val recipeLink: String ?= null,
+    val recipeLink: String? = null,
     @ColumnInfo(name = "recipeDescription")
-    val recipeDescription: String ?= null
-):Serializable
+    var recipeDescription: String? = null
+) : Serializable
 
+/**
+ * Category data class
+ */
 @Entity(tableName = "category")
 data class Category(
     @PrimaryKey
