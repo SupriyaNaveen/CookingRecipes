@@ -2,14 +2,14 @@ package com.example.cookingrecipes.model.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
 /**
  * Cooking Recipes data class
  */
-//TODO : indices = [Index(value = ["recipeLink"], unique = true)]
-@Entity(tableName = "recipes")
+@Entity(tableName = "recipes", indices = [Index(value = ["recipeLink"], unique = true)])
 data class CookingRecipes(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -17,10 +17,10 @@ data class CookingRecipes(
     @ColumnInfo(name = "recipeName")
     var recipeName: String? = null,
     @ColumnInfo(name = "recipeLink")
-    val recipeLink: String ?= null,
+    val recipeLink: String? = null,
     @ColumnInfo(name = "recipeDescription")
     var recipeDescription: String? = null
-):Serializable
+) : Serializable
 
 /**
  * Category data class

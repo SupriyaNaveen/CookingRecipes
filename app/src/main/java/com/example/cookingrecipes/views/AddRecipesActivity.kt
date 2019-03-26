@@ -72,9 +72,10 @@ class AddRecipesActivity : AppCompatActivity() {
         mRecipesAddViewModel.recipesAddError().observe(this, Observer<String> {
             if (it != null) {
                 Toast.makeText(
-                    this, resources.getString(R.string.error_message_get_recipes_failed) + it,
+                    this, resources.getString(R.string.error_add_recipes),
                     Toast.LENGTH_SHORT
                 ).show()
+                text_view_recipes_link.error = getString(R.string.error_add_recipes)
             }
         })
 

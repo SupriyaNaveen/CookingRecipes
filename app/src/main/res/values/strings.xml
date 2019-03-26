@@ -19,4 +19,5 @@
     <string name="recipes">Recipes</string>
     <string name="add_recipes_success_message">Cooking recipes added successfully.</string>
     <string name="done">Done</string>
+    <string name="error_add_recipes">Recipes link already exists.</string>
 </resources>

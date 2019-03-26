@@ -16,6 +16,6 @@ class AddRecipesModel @Inject constructor(
      * Add recipes data.
      */
     fun addRecipesData(cookingRecipes: CookingRecipes): Single<Long>? {
-        return Single.fromCallable<Long> { recipesDao.insert(cookingRecipes) }
+        return Single.fromCallable<Long> { recipesDao.insertManual(cookingRecipes) }
     }
 }
