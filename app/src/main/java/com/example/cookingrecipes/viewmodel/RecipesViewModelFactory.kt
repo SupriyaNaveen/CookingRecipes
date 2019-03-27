@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import javax.inject.Inject
 
+@Suppress("UNCHECKED_CAST")
 class RecipesViewModelFactory @Inject constructor(
-    private val recipesViewModel: RecipesViewModel
+        private val recipesViewModel: RecipesViewModel
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

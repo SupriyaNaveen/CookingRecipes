@@ -6,18 +6,19 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cookingrecipes.R
+import com.example.cookingrecipes.databinding.ActivityRecipesBinding
 import com.example.cookingrecipes.model.data.CookingRecipes
 import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.utils.InfiniteScrollListener
 import com.example.cookingrecipes.viewmodel.RecipesViewModel
 import com.example.cookingrecipes.viewmodel.RecipesViewModelFactory
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_recipes.*
 import javax.inject.Inject
 
 /**
@@ -32,6 +33,7 @@ class RecipesActivity : AppCompatActivity() {
     var mRecipesAdapter = RecipesAdapter(this, ArrayList())
     lateinit var mRecipesViewModel: RecipesViewModel
     var currentPage = 0
+    private lateinit var mDataBinding: ActivityRecipesBinding
 
     /**
      * List of recipes displayed.
@@ -40,9 +42,9 @@ class RecipesActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recipes)
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipes)
 
-        button_add_recipes.setOnClickListener {
+        mDataBinding.buttonAddRecipes.setOnClickListener {
             val intent = Intent(this, AddRecipesActivity::class.java)
             startActivityForResult(intent, Constants.REQUEST_CODE_ADD_RECIPES)
         }
@@ -52,23 +54,23 @@ class RecipesActivity : AppCompatActivity() {
             RecipesViewModel::class.java
         )
 
-        progress_bar.visibility = View.VISIBLE
+        mDataBinding.progressBar.visibility = View.VISIBLE
         currentPage = 0
         loadData()
 
         mRecipesViewModel.recipesResult().observe(this,
             Observer<List<CookingRecipes>> {
-                progress_bar.visibility = View.INVISIBLE
+                mDataBinding.progressBar.visibility = View.INVISIBLE
                 if (it != null) {
                     val position = mRecipesAdapter.itemCount
                     mRecipesAdapter.addRecipes(it)
-                    recycler_view_recipes.adapter = mRecipesAdapter
-                    recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
+                    mDataBinding.recyclerViewRecipes.adapter = mRecipesAdapter
+                    mDataBinding.recyclerViewRecipes.scrollToPosition(position - Constants.LIST_SCROLLING)
                 }
             })
 
         mRecipesViewModel.recipesError().observe(this, Observer<String> {
-            progress_bar.visibility = View.INVISIBLE
+            mDataBinding.progressBar.visibility = View.INVISIBLE
             if (it != null) {
                 Toast.makeText(
                     this, resources.getString(R.string.error_message_get_recipes_failed) + it,
@@ -78,7 +80,7 @@ class RecipesActivity : AppCompatActivity() {
         })
 
         mRecipesViewModel.recipesLoader().observe(this, Observer<Boolean> {
-            if (it == false) progress_bar.visibility = View.GONE
+            if (it == false) mDataBinding.progressBar.visibility = View.GONE
         })
 
     }
@@ -89,7 +91,7 @@ class RecipesActivity : AppCompatActivity() {
     private fun initializeRecycler() {
         val gridLayoutManager = GridLayoutManager(this, 1)
         gridLayoutManager.orientation = RecyclerView.VERTICAL
-        recycler_view_recipes.apply {
+        mDataBinding.recyclerViewRecipes.apply {
             setHasFixedSize(true)
             layoutManager = gridLayoutManager
             addOnScrollListener(InfiniteScrollListener({ loadData() }, gridLayoutManager))
@@ -116,8 +118,8 @@ class RecipesActivity : AppCompatActivity() {
                 val position = mRecipesAdapter.itemCount
                 if (data != null) {
                     mRecipesAdapter.addRecipesData(data.extras?.get(Constants.ADDED_RECIPES_INTENT_KEY) as CookingRecipes)
-                    recycler_view_recipes.adapter = mRecipesAdapter
-                    recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
+                    mDataBinding.recyclerViewRecipes.adapter = mRecipesAdapter
+                    mDataBinding.recyclerViewRecipes.scrollToPosition(position - Constants.LIST_SCROLLING)
                 }
             }
         } else if (requestCode == Constants.REQUEST_CODE_RECIPES_DETAILS) {
@@ -125,15 +127,15 @@ class RecipesActivity : AppCompatActivity() {
                 val position = mRecipesAdapter.itemCount
                 if (data != null) {
                     mRecipesAdapter.deleteRecipesData(data.extras?.get(Constants.DELETED_RECIPES_INTENT_KEY) as CookingRecipes)
-                    recycler_view_recipes.adapter = mRecipesAdapter
-                    recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
+                    mDataBinding.recyclerViewRecipes.adapter = mRecipesAdapter
+                    mDataBinding.recyclerViewRecipes.scrollToPosition(position - Constants.LIST_SCROLLING)
                 }
             } else if (resultCode == Constants.RESULT_CODE_UPDATE) {
                 val position = mRecipesAdapter.itemCount
                 if (data != null) {
                     mRecipesAdapter.updateRecipesData(data.extras?.get(Constants.UPDATED_RECIPES_INTENT_KEY) as CookingRecipes)
-                    recycler_view_recipes.adapter = mRecipesAdapter
-                    recycler_view_recipes.scrollToPosition(position - Constants.LIST_SCROLLING)
+                    mDataBinding.recyclerViewRecipes.adapter = mRecipesAdapter
+                    mDataBinding.recyclerViewRecipes.scrollToPosition(position - Constants.LIST_SCROLLING)
                 }
             }
         }

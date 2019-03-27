@@ -1,86 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:paddingEnd="@dimen/dp16"
-              android:paddingStart="@dimen/dp16">
 
-    <androidx.cardview.widget.CardView
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="recipes"
+            type="com.example.cookingrecipes.model.data.CookingRecipes" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/dp16"
+        android:paddingEnd="@dimen/dp16">
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp16"
             app:cardBackgroundColor="@color/colorWhite"
             app:cardCornerRadius="@dimen/cardview_default_corner_radius"
-            app:cardElevation="@dimen/cardview_default_elavation"
-            android:layout_marginTop="@dimen/dp16">
+            app:cardElevation="@dimen/cardview_default_elavation">
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
                 android:orientation="vertical"
                 android:padding="@dimen/dp16">
-            <com.google.android.material.textfield.TextInputLayout
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/lbl_recipes_name">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_view_recipes_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawablePadding="@dimen/dp10"
                         android:drawableStart="@drawable/ic_kitchen_black_24dp"
+                        android:drawablePadding="@dimen/dp10"
                         android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:maxLines="1"/>
+                        android:maxLines="1"
+                        android:text="@{recipes.recipeName}" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/lbl_recipes_desc">
 
-                <com.google.android.material.textfield.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_view_recipes_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawablePadding="@dimen/dp10"
                         android:drawableStart="@drawable/ic_kitchen_black_24dp"
+                        android:drawablePadding="@dimen/dp10"
                         android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:maxLines="1"/>
+                        android:maxLines="1"
+                        android:text="@{recipes.recipeDescription}" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-        </LinearLayout>
+            </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-    <TextView
+        <TextView
             style="@style/TextTheme.Title.Black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp16"
             android:gravity="start"
-            android:text="@string/recipes_play_url"
-            android:layout_marginTop="@dimen/dp16"/>
+            android:text="@string/recipes_play_url" />
 
-    <!--<androidx.recyclerview.widget.RecyclerView-->
-    <!--android:id="@+id/recycler_view_recipes_categories"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"/>-->
-    <ImageView
+        <!--<androidx.recyclerview.widget.RecyclerView-->
+        <!--android:id="@+id/recycler_view_recipes_categories"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"/>-->
+        <ImageView
             android:id="@+id/image_view_play_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp16"
-            android:contentDescription="@string/lbl_recipes_link"/>
+            android:contentDescription="@string/lbl_recipes_link" />
 
-    <TextView android:id="@+id/text_view_play_url"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_view_play_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{recipes.recipeLink}" />
+    </LinearLayout>
+</layout>

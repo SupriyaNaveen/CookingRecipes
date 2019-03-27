@@ -6,22 +6,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.cookingrecipes.R
+import com.example.cookingrecipes.databinding.ActivityRecipesAddBinding
 import com.example.cookingrecipes.model.data.CookingRecipes
 import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.viewmodel.AddRecipesViewModel
 import com.example.cookingrecipes.viewmodel.AddRecipesViewModelFactory
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_recipes_add.*
 import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * Add recipes activity, allows the user to add CookingRecipes.
  * Recipes name, youtube link, desciption entered are added to local DB.
- * TODO: Add Rrecipes to REST API.
+ * TODO: Add Recipes to REST API.
  */
 class AddRecipesActivity : AppCompatActivity() {
 
@@ -31,6 +32,8 @@ class AddRecipesActivity : AppCompatActivity() {
     //Inject view model factory
     @Inject
     lateinit var mAddRecipesViewModelFactory: AddRecipesViewModelFactory
+
+    private lateinit var dataBinding: ActivityRecipesAddBinding
 
     /**
      * Activity created : set view.
@@ -43,7 +46,7 @@ class AddRecipesActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recipes_add)
+        dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipes_add)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
@@ -58,9 +61,9 @@ class AddRecipesActivity : AppCompatActivity() {
                 if (it > 0) {
                     val cookingRecipes = CookingRecipes(
                         id = it.toInt(),
-                        recipeName = text_view_recipe_name.text.toString(),
-                        recipeLink = text_view_recipes_link.text.toString(),
-                        recipeDescription = text_view_recipes_description.text.toString()
+                            recipeName = dataBinding.textViewRecipeName.text.toString(),
+                            recipeLink = dataBinding.textViewRecipesLink.text.toString(),
+                            recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
                     )
                     showRecipesAddedMessage(cookingRecipes)
                 } else {
@@ -75,18 +78,18 @@ class AddRecipesActivity : AppCompatActivity() {
                     this, resources.getString(R.string.error_add_recipes),
                     Toast.LENGTH_SHORT
                 ).show()
-                text_view_recipes_link.error = getString(R.string.error_add_recipes)
+                dataBinding.textViewRecipesLink.error = getString(R.string.error_add_recipes)
             }
         })
 
-        button_add_recipes.setOnClickListener {
+        dataBinding.buttonAddRecipes.setOnClickListener {
 
             val isValidInput = isValidInput()
             if (isValidInput) {
                 val cookingRecipes = CookingRecipes(
-                    recipeName = text_view_recipe_name.text.toString(),
-                    recipeLink = text_view_recipes_link.text.toString(),
-                    recipeDescription = text_view_recipes_description.text.toString()
+                        recipeName = dataBinding.textViewRecipeName.text.toString(),
+                        recipeLink = dataBinding.textViewRecipesLink.text.toString(),
+                        recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
                 )
                 mRecipesAddViewModel.addRecipesDetails(cookingRecipes)
 
@@ -95,7 +98,7 @@ class AddRecipesActivity : AppCompatActivity() {
     }
 
     /**
-     * Alert dialog to show the reciped added successfully.
+     * Alert dialog to show the recipes added successfully.
      */
     private fun showRecipesAddedMessage(cookingRecipes: CookingRecipes) {
         val builder = AlertDialog.Builder(this)
@@ -127,18 +130,18 @@ class AddRecipesActivity : AppCompatActivity() {
      */
     private fun isValidInput(): Boolean {
         var isValid = true
-        if (text_view_recipe_name.text.toString().isEmpty()) {
-            text_view_recipe_name.error = getString(R.string.fld_error_recipe_name)
+        if (dataBinding.textViewRecipeName.text.toString().isEmpty()) {
+            dataBinding.textViewRecipeName.error = getString(R.string.fld_error_recipe_name)
             isValid = false
         } else {
-            text_view_recipe_name.error = null
+            dataBinding.textViewRecipeName.error = null
         }
 
-        if (text_view_recipes_link.toString().isEmpty()) {
-            text_view_recipes_link.error = getString(R.string.fld_error_recipes_link)
+        if (dataBinding.textViewRecipesLink.toString().isEmpty()) {
+            dataBinding.textViewRecipesLink.error = getString(R.string.fld_error_recipes_link)
             isValid = false
         } else {
-            text_view_recipes_link.error = null
+            dataBinding.textViewRecipesLink.error = null
         }
 
         return isValid

@@ -7,11 +7,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.cookingrecipes.R
+import com.example.cookingrecipes.databinding.ActivityRecipesDetailsBinding
 import com.example.cookingrecipes.model.data.CookingRecipes
 import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.utils.Utils
@@ -19,9 +19,9 @@ import com.example.cookingrecipes.viewmodel.RecipesDetailsViewModel
 import com.example.cookingrecipes.viewmodel.RecipesDetailsViewModelFactory
 import com.squareup.picasso.Picasso
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_recipes_details.*
 import java.net.MalformedURLException
 import javax.inject.Inject
+
 
 /**
  * Show the recipes details. On selection of link redirects to youtube app.
@@ -30,12 +30,12 @@ import javax.inject.Inject
 class RecipesDetailsActivity : AppCompatActivity() {
 
     //Init view model
-    lateinit var mRecipesDetailsViewModel: RecipesDetailsViewModel
+    private lateinit var mRecipesDetailsViewModel: RecipesDetailsViewModel
 
     @Inject
     lateinit var mRecipesDetailsViewModelFactory: RecipesDetailsViewModelFactory
 
-    lateinit var cookingRecipes: CookingRecipes
+    private lateinit var mDataBinding: ActivityRecipesDetailsBinding
 
     /**
      * Creates view to show recipes details.
@@ -47,11 +47,10 @@ class RecipesDetailsActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recipes_details)
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipes_details)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-        initializeRecycler()
 
         mRecipesDetailsViewModel = ViewModelProviders.of(this, mRecipesDetailsViewModelFactory).get(
             RecipesDetailsViewModel::class.java
@@ -62,17 +61,14 @@ class RecipesDetailsActivity : AppCompatActivity() {
         mRecipesDetailsViewModel.recipesDetailsResult().observe(this,
             Observer<CookingRecipes> {
                 if (it != null) {
-                    cookingRecipes = it
-                    text_view_recipes_name.setText(it.recipeName)
-                    text_view_play_url.text = it.recipeLink
-                    text_view_recipes_description.setText(it.recipeDescription)
+                    mDataBinding.recipes = it
                     val url = Utils.getYoutubeThumbnailUrlFromVideoUrl(it.recipeLink!!)
                     try {
                         Picasso.get()
                             .load(url)
                             .placeholder(R.drawable.ic_kitchen_black_24dp)
                             .error(R.drawable.ic_kitchen_black_24dp)
-                            .into(image_view_play_url)
+                                .into(mDataBinding.imageViewPlayUrl)
 
                     } catch (e: MalformedURLException) {
                         e.printStackTrace()
@@ -90,15 +86,11 @@ class RecipesDetailsActivity : AppCompatActivity() {
             }
         })
 
-        mRecipesDetailsViewModel.recipesDetailsLoader().observe(this, Observer<Boolean> {
-            //            if (it == false) progress_bar.visibility = View.GONE
-        })
-
-        image_view_play_url.setOnClickListener {
+        mDataBinding.imageViewPlayUrl.setOnClickListener {
             playYoutubeVideo()
         }
 
-        text_view_play_url.setOnClickListener {
+        mDataBinding.textViewPlayUrl.setOnClickListener {
             playYoutubeVideo()
         }
 
@@ -106,7 +98,7 @@ class RecipesDetailsActivity : AppCompatActivity() {
             Observer<Int> {
                 if (it > 0) {
                     val intent = Intent()
-                    intent.putExtra(Constants.DELETED_RECIPES_INTENT_KEY, cookingRecipes)
+                    intent.putExtra(Constants.DELETED_RECIPES_INTENT_KEY, mDataBinding.recipes)
                     setResult(Constants.RESULT_CODE_DELETE, intent)
                     finish()//finishing activity
                 }
@@ -116,7 +108,7 @@ class RecipesDetailsActivity : AppCompatActivity() {
             Observer<Int> {
                 if (it > 0) {
                     val intent = Intent()
-                    intent.putExtra(Constants.UPDATED_RECIPES_INTENT_KEY, cookingRecipes)
+                    intent.putExtra(Constants.UPDATED_RECIPES_INTENT_KEY, mDataBinding.recipes)
                     setResult(Constants.RESULT_CODE_UPDATE, intent)
                     finish()//finishing activity
                 }
@@ -127,19 +119,7 @@ class RecipesDetailsActivity : AppCompatActivity() {
      * Start youtube application.
      */
     private fun playYoutubeVideo() {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(text_view_play_url.text.toString())))
-    }
-
-    /**
-     * TODO : Load categories
-     */
-    private fun initializeRecycler() {
-        val gridLayoutManager = GridLayoutManager(this, 1)
-        gridLayoutManager.orientation = RecyclerView.VERTICAL
-//        recycler_view_recipes.apply {
-//            setHasFixedSize(true)
-//            layoutManager = gridLayoutManager
-//        }
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mDataBinding.recipes?.recipeLink)))
     }
 
     private fun loadData(id: Int) {
@@ -160,18 +140,18 @@ class RecipesDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_delete -> {
             // User chose the "Delete" item
-            mRecipesDetailsViewModel.deleteRecipesDetails(cookingRecipes)
+            mRecipesDetailsViewModel.deleteRecipesDetails(mDataBinding.recipes!!)
             true
         }
         R.id.action_update -> {
-            if (cookingRecipes.recipeName == text_view_recipes_name.text.toString() &&
-                cookingRecipes.recipeDescription == text_view_recipes_description.text.toString()
+            if (mDataBinding.recipes?.recipeName == mDataBinding.textViewRecipesName.text.toString() &&
+                    mDataBinding.recipes?.recipeDescription == mDataBinding.textViewRecipesDescription.text.toString()
             ) {
                 Toast.makeText(this, getString(R.string.error_message_up_to_date), Toast.LENGTH_LONG).show()
             } else {
-                cookingRecipes.recipeName = text_view_recipes_name.text.toString()
-                cookingRecipes.recipeDescription = text_view_recipes_description.text.toString()
-                mRecipesDetailsViewModel.updateRecipesDetails(cookingRecipes)
+                mDataBinding.recipes?.recipeName = mDataBinding.textViewRecipesName.text.toString()
+                mDataBinding.recipes?.recipeDescription = mDataBinding.textViewRecipesDescription.text.toString()
+                mRecipesDetailsViewModel.updateRecipesDetails(mDataBinding.recipes!!)
             }
             true
         }
