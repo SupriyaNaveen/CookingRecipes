@@ -50,16 +50,18 @@ class RecipesViewModel @Inject constructor(private val recipesModel: RecipesMode
         }
 
         recipesModel.getRecipesOnLimit(limit, offset)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .debounce(400, TimeUnit.MILLISECONDS)
-            .subscribe(disposableObserver)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .debounce(400, TimeUnit.MILLISECONDS)
+                .subscribe(disposableObserver)
     }
 
 
     fun disposeElements() {
         try {
-            if (!disposableObserver.isDisposed) disposableObserver.dispose()
+            if (this::disposableObserver.isInitialized) {
+                if (!disposableObserver.isDisposed) disposableObserver.dispose()
+            }
         } catch (e: UninitializedPropertyAccessException) {
             Timber.e(e)
         }

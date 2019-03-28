@@ -106,8 +106,12 @@ class RecipesDetailsViewModel @Inject constructor(private val recipesDetailsMode
     fun disposeElements() {
         try {
             if (!disposableObserver.isDisposed) disposableObserver.dispose()
-            if (!disposableDeleteObserver.isDisposed) disposableDeleteObserver.dispose()
-            if (!disposableUpdateObserver.isDisposed) disposableUpdateObserver.dispose()
+            if (this::disposableDeleteObserver.isInitialized) {
+                if (!disposableDeleteObserver.isDisposed) disposableDeleteObserver.dispose()
+            }
+            if (this::disposableUpdateObserver.isInitialized) {
+                if (!disposableUpdateObserver.isDisposed) disposableUpdateObserver.dispose()
+            }
         } catch (e: UninitializedPropertyAccessException) {
             Timber.e(e)
         }

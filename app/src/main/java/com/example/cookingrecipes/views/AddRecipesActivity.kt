@@ -51,32 +51,38 @@ class AddRecipesActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
+        val extras = intent.extras
+        if (extras != null) {
+            dataBinding.textViewRecipesLink.setText(extras.getString(Intent.EXTRA_TEXT))
+            dataBinding.textViewRecipeName.setText(extras.getString(Intent.EXTRA_SUBJECT))
+        }
+
         mRecipesAddViewModel = ViewModelProviders.of(this, mAddRecipesViewModelFactory).get(
-            AddRecipesViewModel::class.java
+                AddRecipesViewModel::class.java
         )
 
         mRecipesAddViewModel.recipesAddResult().observe(
-            this,
-            Observer<Long> {
-                if (it > 0) {
-                    val cookingRecipes = CookingRecipes(
-                        id = it.toInt(),
-                            recipeName = dataBinding.textViewRecipeName.text.toString(),
-                            recipeLink = dataBinding.textViewRecipesLink.text.toString(),
-                            recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
-                    )
-                    showRecipesAddedMessage(cookingRecipes)
-                } else {
-                    Timber.d("Row inserted id : $it")
+                this,
+                Observer<Long> {
+                    if (it > 0) {
+                        val cookingRecipes = CookingRecipes(
+                                id = it.toInt(),
+                                recipeName = dataBinding.textViewRecipeName.text.toString(),
+                                recipeLink = dataBinding.textViewRecipesLink.text.toString(),
+                                recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
+                        )
+                        showRecipesAddedMessage(cookingRecipes)
+                    } else {
+                        Timber.d("Row inserted id : $it")
+                    }
                 }
-            }
         )
 
         mRecipesAddViewModel.recipesAddError().observe(this, Observer<String> {
             if (it != null) {
                 Toast.makeText(
-                    this, resources.getString(R.string.error_add_recipes),
-                    Toast.LENGTH_SHORT
+                        this, resources.getString(R.string.error_add_recipes),
+                        Toast.LENGTH_SHORT
                 ).show()
                 dataBinding.textViewRecipesLink.error = getString(R.string.error_add_recipes)
             }

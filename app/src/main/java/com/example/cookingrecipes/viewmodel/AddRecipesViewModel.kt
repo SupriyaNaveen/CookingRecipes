@@ -49,7 +49,9 @@ class AddRecipesViewModel @Inject constructor(private val addRecipesModel: AddRe
 
     fun disposeElements() {
         try {
-            if (!disposableObserver.isDisposed) disposableObserver.dispose()
+            if (this::disposableObserver.isInitialized) {
+                if (!disposableObserver.isDisposed) disposableObserver.dispose()
+            }
         } catch (e: UninitializedPropertyAccessException) {
             Timber.e(e)
         }
