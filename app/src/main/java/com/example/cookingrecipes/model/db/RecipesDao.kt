@@ -30,4 +30,7 @@ interface RecipesDao {
 
     @Query(value = "SELECT * FROM recipes WHERE id = :id")
     fun queryRecipesDetails(id: Int): CookingRecipes
+
+    @Query("DELETE FROM recipes")
+    fun deleteAll()
 }

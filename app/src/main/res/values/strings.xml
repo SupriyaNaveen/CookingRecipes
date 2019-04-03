@@ -25,6 +25,11 @@
     <string name="error_message_up_to_date">Recipes details up to date.</string>
     <string name="add_recipes_success_message">Cooking recipes added successfully.</string>
     <string name="error_message_delete_failed">Delete recipe failed.</string>
+    <string name="action_delete_all">Delete All</string>
+    <string name="message_confirm_delete">Do you really want to delete all recipes?</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="error_no_recipes_to_delete">No recipes to delete</string>
 
 
 </resources>

@@ -81,4 +81,10 @@ class RecipesModel @Inject constructor(
             recipesDao.insertManual(cookingRecipes)
         }
     }
+
+    suspend fun deletesAllRecipes() {
+        withContext(IO) {
+            recipesDao.deleteAll()
+        }
+    }
 }

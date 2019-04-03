@@ -27,6 +27,10 @@ class RecipesViewModel @Inject constructor(private val recipesModel: RecipesMode
     suspend fun addRecipesDetails(cookingRecipes: CookingRecipes): Long {
         return recipesModel.addRecipesData(cookingRecipes)
     }
+
+    suspend fun deleteAllRecipesData() {
+        recipesModel.deletesAllRecipes()
+    }
 }
 
 
