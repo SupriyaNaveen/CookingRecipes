@@ -1,4 +1,4 @@
-# CookingRecipes
+# CookingRecipes with android JetPack features
 The application is designed and developed to demonstrate the Model View ViewModel(MVVM) architectural pattern in Kotlin.
 The application allows the user to Add, View, Update and Delete the Recipes(Name, Description and youtube link of cooking recipes). The application also allows user to play recipes in YouTube android Application.
 
@@ -10,6 +10,9 @@ Dagger 2.<br/>
 Timber.<br/>
 Retrofit.<br/>
 Picasso<br/>
+Android Jetpack LiveData.<br/>
+Android Kotlin Coroutines.<br/>
+Android ViewModel.<br/>
 UI: RecyclerView, CardView, ConstraintLayout.
 
 # Reference
