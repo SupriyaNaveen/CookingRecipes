@@ -1,13 +1,12 @@
 package com.example.cookingrecipes.model
 
-import android.annotation.SuppressLint
+import androidx.lifecycle.LiveData
 import com.example.cookingrecipes.model.api.RestApi
 import com.example.cookingrecipes.model.data.CookingRecipes
 import com.example.cookingrecipes.model.db.RecipesDao
 import com.example.cookingrecipes.utils.Utils
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -16,66 +15,70 @@ import javax.inject.Inject
  * Get recipes from Local DB for given offset, limit.
  */
 class RecipesModel @Inject constructor(
-    private val restApi: RestApi,
-    private val recipesDao: RecipesDao,
-    private val utils: Utils
+        private val restApi: RestApi,
+        private val recipesDao: RecipesDao,
+        private val utils: Utils
 ) {
 
     /**
      * Get recipes from web API.
      */
-    private fun getRecipesFromApi(): Observable<List<CookingRecipes>> {
-        return restApi.getRecipes()
-            .doOnNext {
-                Timber.d("Dispatching ${it.size} users from API...")
-                storeRecipesInDb(it)
-            }
-    }
+//    private fun getRecipesFromApi(): Observable<List<CookingRecipes>> {
+//        return restApi.getRecipes()
+//                .doOnNext {
+//                    Timber.d("Dispatching ${it.size} users from API...")
+//                    storeRecipesInDb(it)
+//                }
+//    }
 
     /**
      * Store all recipes details to local DB.
      */
-    @SuppressLint("CheckResult")
-    private fun storeRecipesInDb(recipes: List<CookingRecipes>) {
-        Observable.fromCallable { recipesDao.insertAll(recipes) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe {
-                if (it != null) {
-                    Timber.d("Inserted $it users from API in DB...")
-                }
-            }
+//    @SuppressLint("CheckResult")
+//    private fun storeRecipesInDb(recipes: List<CookingRecipes>) {
+//
+//        Observable.fromCallable { recipesDao.insertAll(recipes) }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(Schedulers.io())
+//                .subscribe {
+//                    if (it != null) {
+//                        Timber.d("Inserted $it users from API in DB...")
+//                    }
+//                }
+//    }
+
+    /**
+     * Get all stored recipes from db, which is live data.
+     */
+    suspend fun getRecipesFromDb(): LiveData<List<CookingRecipes>> {
+        return withContext(IO) { recipesDao.getRecipes() }
     }
 
     /**
-     * Get recipes for given limit.
-     * Check for internet connection,
-     * If yes, then fetch recipes from both API and locan DB.
+     * Delete a recipe from DB. Using Co-routine
      */
-    fun getRecipesOnLimit(limit: Int, offset: Int): Observable<List<CookingRecipes>> {
-//        val hasConnection = utils.isConnectedToInternet()
-//        var observableFromApi: Observable<List<CookingRecipes>>? = null
-//        TODO("Web api should be called after api created")
-//        if (hasConnection) {
-//            observableFromApi = getRecipesFromApi()
-//        }
-
-//        return if (hasConnection && observableFromApi != null) Observable.concatArrayEager(
-//            observableFromApi,
-//            observableFromDb
-//        )
-//        else
-        return getRecipesFromDb(limit, offset)
+    suspend fun deletesRecipes(cookingRecipes: CookingRecipes): Int {
+        return withContext(IO) {
+            recipesDao.delete(cookingRecipes)
+        }
     }
 
     /**
-     * Get recipes from local DB.
+     * Update a recipe in DB.
      */
-    private fun getRecipesFromDb(limit: Int, offset: Int): Observable<List<CookingRecipes>> {
-        return recipesDao.queryRecipesOnLimit(limit, offset)
-            .toObservable()
-            .doOnNext {
-                Timber.d(it.size.toString())
-            }
+    suspend fun updateRecipes(cookingRecipes: CookingRecipes): Int {
+        return withContext(IO) {
+            recipesDao.update(cookingRecipes)
+        }
+    }
+
+    suspend fun getRecipesDetails(id: Int): CookingRecipes {
+        return withContext(IO) { recipesDao.queryRecipesDetails(id) }
+    }
+
+    suspend fun addRecipesData(cookingRecipes: CookingRecipes): Long {
+        return withContext(IO) {
+            recipesDao.insertManual(cookingRecipes)
+        }
     }
 }

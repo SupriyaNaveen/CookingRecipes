@@ -1,64 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_margin="@dimen/dp16">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp16"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/lbl_recipes_name">
 
-        <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/text_view_recipe_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/dp10"
                 android:drawableStart="@drawable/ic_kitchen_black_24dp"
+                android:drawablePadding="@dimen/dp10"
                 android:imeOptions="actionNext"
                 android:inputType="text"
-                android:maxLines="1"/>
+                android:maxLines="1" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/lbl_recipes_link">
 
-        <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/text_view_recipes_link"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/dp10"
                 android:drawableStart="@drawable/ic_kitchen_black_24dp"
+                android:drawablePadding="@dimen/dp10"
                 android:imeOptions="actionNext"
                 android:inputType="text"
-                android:maxLines="1"/>
+                android:maxLines="1" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/lbl_recipes_desc">
 
-        <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/text_view_recipes_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/dp10"
                 android:drawableStart="@drawable/ic_kitchen_black_24dp"
+                android:drawablePadding="@dimen/dp10"
                 android:imeOptions="actionNext"
                 android:inputType="text"
-                android:maxLines="1"/>
+                android:maxLines="1" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <Button android:id="@+id/button_add_recipes"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="@string/add_recipes"
+        <Button
+            android:id="@+id/button_add_recipes"
             style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_marginTop="@dimen/dp16"/>
-</LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp16"
+            android:text="@string/add_recipes" />
+    </LinearLayout>
+</layout>

@@ -1,32 +1,13 @@
 package com.example.cookingrecipes.utils
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 /**
  * Utility class has generic functions.
  */
-@Suppress("DEPRECATION")
 class Utils @Inject constructor(private val context: Context) {
-
-    /**
-     * Checks whether phone is connected or not.
-     */
-    fun isConnectedToInternet(): Boolean {
-        val connectivity = context.getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        val info = connectivity.allNetworkInfo
-        if (info != null)
-            for (i in info.indices)
-                if (info[i].state == NetworkInfo.State.CONNECTED) {
-                    return true
-                }
-        return false
-    }
 
     companion object {
 

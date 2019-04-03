@@ -9,8 +9,6 @@ import com.example.cookingrecipes.model.db.AppDatabase
 import com.example.cookingrecipes.model.db.RecipesDao
 import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.utils.Utils
-import com.example.cookingrecipes.viewmodel.AddRecipesViewModelFactory
-import com.example.cookingrecipes.viewmodel.RecipesDetailsViewModelFactory
 import com.example.cookingrecipes.viewmodel.RecipesViewModelFactory
 import dagger.Module
 import dagger.Provides
@@ -57,19 +55,6 @@ class AppModule(val app: Application) {
     fun provideRecipesViewModelFactory(
         factory: RecipesViewModelFactory
     ): ViewModelProvider.Factory = factory
-
-    @Provides
-    @Singleton
-    fun provideRecipesDetailsViewModelFactory(
-        factory: RecipesDetailsViewModelFactory
-    ): ViewModelProvider.Factory = factory
-
-    @Provides
-    @Singleton
-    fun provideAddRecipesViewModelFactory(
-        factory: AddRecipesViewModelFactory
-    ): ViewModelProvider.Factory = factory
-
 
     @Provides
     @Singleton
