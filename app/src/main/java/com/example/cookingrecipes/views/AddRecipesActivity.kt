@@ -1,39 +1,50 @@
 package com.example.cookingrecipes.views
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.cookingrecipes.R
 import com.example.cookingrecipes.databinding.ActivityRecipesAddBinding
 import com.example.cookingrecipes.model.data.CookingRecipes
-import com.example.cookingrecipes.utils.Constants
-import com.example.cookingrecipes.viewmodel.AddRecipesViewModel
-import com.example.cookingrecipes.viewmodel.AddRecipesViewModelFactory
+import com.example.cookingrecipes.viewmodel.RecipesViewModel
+import com.example.cookingrecipes.viewmodel.RecipesViewModelFactory
 import dagger.android.AndroidInjection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Add recipes activity, allows the user to add CookingRecipes.
  * Recipes name, youtube link, desciption entered are added to local DB.
  * TODO: Add Recipes to REST API.
  */
-class AddRecipesActivity : AppCompatActivity() {
+class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
 
     //Init view model
-    private lateinit var mRecipesAddViewModel: AddRecipesViewModel
+    private lateinit var mRecipesAddViewModel: RecipesViewModel
 
     //Inject view model factory
     @Inject
-    lateinit var mAddRecipesViewModelFactory: AddRecipesViewModelFactory
+    lateinit var mAddRecipesViewModelFactory: RecipesViewModelFactory
 
     private lateinit var dataBinding: ActivityRecipesAddBinding
+
+    private var job: Job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
 
     /**
      * Activity created : set view.
@@ -58,35 +69,8 @@ class AddRecipesActivity : AppCompatActivity() {
         }
 
         mRecipesAddViewModel = ViewModelProviders.of(this, mAddRecipesViewModelFactory).get(
-                AddRecipesViewModel::class.java
+                RecipesViewModel::class.java
         )
-
-        mRecipesAddViewModel.recipesAddResult().observe(
-                this,
-                Observer<Long> {
-                    if (it > 0) {
-                        val cookingRecipes = CookingRecipes(
-                                id = it.toInt(),
-                                recipeName = dataBinding.textViewRecipeName.text.toString(),
-                                recipeLink = dataBinding.textViewRecipesLink.text.toString(),
-                                recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
-                        )
-                        showRecipesAddedMessage(cookingRecipes)
-                    } else {
-                        Timber.d("Row inserted id : $it")
-                    }
-                }
-        )
-
-        mRecipesAddViewModel.recipesAddError().observe(this, Observer<String> {
-            if (it != null) {
-                Toast.makeText(
-                        this, resources.getString(R.string.error_add_recipes),
-                        Toast.LENGTH_SHORT
-                ).show()
-                dataBinding.textViewRecipesLink.error = getString(R.string.error_add_recipes)
-            }
-        })
 
         dataBinding.buttonAddRecipes.setOnClickListener {
 
@@ -97,8 +81,15 @@ class AddRecipesActivity : AppCompatActivity() {
                         recipeLink = dataBinding.textViewRecipesLink.text.toString(),
                         recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
                 )
-                mRecipesAddViewModel.addRecipesDetails(cookingRecipes)
 
+                launch {
+                    val rowId = mRecipesAddViewModel.addRecipesDetails(cookingRecipes)
+                    if (rowId > 0) {
+                        showRecipesAddedMessage()
+                    } else {
+                        Timber.d("Row inserted id : $it")
+                    }
+                }
             }
         }
     }
@@ -106,7 +97,7 @@ class AddRecipesActivity : AppCompatActivity() {
     /**
      * Alert dialog to show the recipes added successfully.
      */
-    private fun showRecipesAddedMessage(cookingRecipes: CookingRecipes) {
+    private fun showRecipesAddedMessage() {
         val builder = AlertDialog.Builder(this)
 
         // Set the alert dialog title
@@ -117,11 +108,7 @@ class AddRecipesActivity : AppCompatActivity() {
 
         // Set a positive button and its click listener on alert dialog
         builder.setPositiveButton(getString(R.string.done)) { _, _ ->
-            // Do something when user press the positive button
-            val intent = Intent()
-            intent.putExtra(Constants.ADDED_RECIPES_INTENT_KEY, cookingRecipes)
-            setResult(Activity.RESULT_OK, intent)
-            finish()//finishing activity
+            finish()
         }
 
         // Finally, make the alert dialog using builder
@@ -151,10 +138,5 @@ class AddRecipesActivity : AppCompatActivity() {
         }
 
         return isValid
-    }
-
-    override fun onDestroy() {
-        mRecipesAddViewModel.disposeElements()
-        super.onDestroy()
     }
 }

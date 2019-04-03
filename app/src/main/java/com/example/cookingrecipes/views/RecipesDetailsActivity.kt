@@ -8,34 +8,49 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProviders
 import com.example.cookingrecipes.R
 import com.example.cookingrecipes.databinding.ActivityRecipesDetailsBinding
-import com.example.cookingrecipes.model.data.CookingRecipes
 import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.utils.Utils
-import com.example.cookingrecipes.viewmodel.RecipesDetailsViewModel
-import com.example.cookingrecipes.viewmodel.RecipesDetailsViewModelFactory
+import com.example.cookingrecipes.viewmodel.RecipesViewModel
+import com.example.cookingrecipes.viewmodel.RecipesViewModelFactory
 import com.squareup.picasso.Picasso
 import dagger.android.AndroidInjection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.net.MalformedURLException
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 
 /**
  * Show the recipes details. On selection of link redirects to youtube app.
  * Recipes can be updated or deleted.
  */
-class RecipesDetailsActivity : AppCompatActivity() {
+class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
 
     //Init view model
-    private lateinit var mRecipesDetailsViewModel: RecipesDetailsViewModel
+    private lateinit var mRecipesDetailsViewModel: RecipesViewModel
 
     @Inject
-    lateinit var mRecipesDetailsViewModelFactory: RecipesDetailsViewModelFactory
+    lateinit var mRecipesDetailsViewModelFactory: RecipesViewModelFactory
 
     private lateinit var mDataBinding: ActivityRecipesDetailsBinding
+    private lateinit var lifecycleOwner: LifecycleOwner
+
+    private var job: Job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
 
     /**
      * Creates view to show recipes details.
@@ -47,44 +62,17 @@ class RecipesDetailsActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
 
         super.onCreate(savedInstanceState)
+        lifecycleOwner = this
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipes_details)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         mRecipesDetailsViewModel = ViewModelProviders.of(this, mRecipesDetailsViewModelFactory).get(
-            RecipesDetailsViewModel::class.java
+                RecipesViewModel::class.java
         )
 
         loadData(id = intent.getIntExtra(Constants.RECIPES_ID_INTENT_KEY, 0))
-
-        mRecipesDetailsViewModel.recipesDetailsResult().observe(this,
-            Observer<CookingRecipes> {
-                if (it != null) {
-                    mDataBinding.recipes = it
-                    val url = Utils.getYoutubeThumbnailUrlFromVideoUrl(it.recipeLink!!)
-                    try {
-                        Picasso.get()
-                            .load(url)
-                            .placeholder(R.drawable.ic_kitchen_black_24dp)
-                            .error(R.drawable.ic_kitchen_black_24dp)
-                                .into(mDataBinding.imageViewPlayUrl)
-
-                    } catch (e: MalformedURLException) {
-                        e.printStackTrace()
-                    }
-
-                }
-            })
-
-        mRecipesDetailsViewModel.recipesError().observe(this, Observer<String> {
-            if (it != null) {
-                Toast.makeText(
-                    this, resources.getString(R.string.error_message_get_recipes_failed) + it,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
 
         mDataBinding.imageViewPlayUrl.setOnClickListener {
             playYoutubeVideo()
@@ -94,25 +82,6 @@ class RecipesDetailsActivity : AppCompatActivity() {
             playYoutubeVideo()
         }
 
-        mRecipesDetailsViewModel.recipesDeleteResult().observe(this,
-            Observer<Int> {
-                if (it > 0) {
-                    val intent = Intent()
-                    intent.putExtra(Constants.DELETED_RECIPES_INTENT_KEY, mDataBinding.recipes)
-                    setResult(Constants.RESULT_CODE_DELETE, intent)
-                    finish()//finishing activity
-                }
-            })
-
-        mRecipesDetailsViewModel.recipesUpdateResult.observe(this,
-            Observer<Int> {
-                if (it > 0) {
-                    val intent = Intent()
-                    intent.putExtra(Constants.UPDATED_RECIPES_INTENT_KEY, mDataBinding.recipes)
-                    setResult(Constants.RESULT_CODE_UPDATE, intent)
-                    finish()//finishing activity
-                }
-            })
     }
 
     /**
@@ -123,7 +92,22 @@ class RecipesDetailsActivity : AppCompatActivity() {
     }
 
     private fun loadData(id: Int) {
-        mRecipesDetailsViewModel.loadRecipesDetails(id)
+
+        launch {
+            mDataBinding.recipes = mRecipesDetailsViewModel.loadRecipesDetails(id)
+            val url = Utils.getYoutubeThumbnailUrlFromVideoUrl(mDataBinding.textViewPlayUrl.toString())
+            try {
+                Picasso.get()
+                        .load(url)
+                        .placeholder(R.drawable.ic_kitchen_black_24dp)
+                        .error(R.drawable.ic_kitchen_black_24dp)
+                        .into(mDataBinding.imageViewPlayUrl)
+
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            }
+
+        }
     }
 
     /**
@@ -139,8 +123,11 @@ class RecipesDetailsActivity : AppCompatActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_delete -> {
-            // User chose the "Delete" item
-            mRecipesDetailsViewModel.deleteRecipesDetails(mDataBinding.recipes!!)
+            launch {
+                val rowId = mRecipesDetailsViewModel.deleteRecipesData(mDataBinding.recipes!!)
+                if (rowId != -1)
+                    finish()
+            }
             true
         }
         R.id.action_update -> {
@@ -151,7 +138,13 @@ class RecipesDetailsActivity : AppCompatActivity() {
             } else {
                 mDataBinding.recipes?.recipeName = mDataBinding.textViewRecipesName.text.toString()
                 mDataBinding.recipes?.recipeDescription = mDataBinding.textViewRecipesDescription.text.toString()
-                mRecipesDetailsViewModel.updateRecipesDetails(mDataBinding.recipes!!)
+
+                launch {
+                    val rowId = mRecipesDetailsViewModel.updateRecipesData(mDataBinding.recipes!!)
+
+                    if (rowId != -1)
+                        finish()
+                }
             }
             true
         }
@@ -159,10 +152,5 @@ class RecipesDetailsActivity : AppCompatActivity() {
             // Invoke the superclass to handle it.
             super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onDestroy() {
-        mRecipesDetailsViewModel.disposeElements()
-        super.onDestroy()
     }
 }

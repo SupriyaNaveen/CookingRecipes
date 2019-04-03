@@ -2,22 +2,29 @@
     <string name="app_name">Recipes Book</string>
     <string name="action_settings">Settings</string>
     <string name="string_add_recipes">Add Recipes</string>
-    <string name="error_message_get_recipes_failed">Get recipes failed :</string>
     <string name="recipes_details">Recipes Details</string>
     <string name="recipes_category_items">Recipes Categories</string>
+    <string name="recipes">Recipes</string>
+    <string name="add_recipes">Add Recipes</string>
+
     <string name="lbl_recipes_name">Recipes Name</string>
     <string name="colon">:</string>
     <string name="lbl_recipes_link">Recipes Link</string>
-    <string name="add_recipes">Add Recipes</string>
     <string name="lbl_recipes_desc">Recipes description</string>
+
     <string name="fld_error_recipe_name">Please enter recipe name</string>
     <string name="fld_error_recipes_link">Please enter recipes link</string>
+
     <string name="recipes_play_url">Recipes Link</string>
     <string name="action_delete">Delete</string>
     <string name="action_update">Update</string>
-    <string name="error_message_up_to_date">Recipes details up to date.</string>
-    <string name="recipes">Recipes</string>
-    <string name="add_recipes_success_message">Cooking recipes added successfully.</string>
     <string name="done">Done</string>
+
     <string name="error_add_recipes">Recipes link already exists.</string>
+    <string name="error_message_get_recipes_failed">Get recipes failed :</string>
+    <string name="error_message_up_to_date">Recipes details up to date.</string>
+    <string name="add_recipes_success_message">Cooking recipes added successfully.</string>
+    <string name="error_message_delete_failed">Delete recipe failed.</string>
+
+
 </resources>

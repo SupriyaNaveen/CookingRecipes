@@ -1,7 +1,7 @@
 package com.example.cookingrecipes.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.Category.model.CategoryModel
+import com.example.cookingrecipes.model.CategoryModel
 import javax.inject.Inject
 
 class CategoryViewModel @Inject constructor(private val categoryModel: CategoryModel) : ViewModel() {

@@ -39,7 +39,7 @@ class RecipesAdapter(
         holder.itemView.setOnClickListener {
             val intent = Intent(context, RecipesDetailsActivity::class.java)
             intent.putExtra(Constants.RECIPES_ID_INTENT_KEY, cookingRecipes.id)
-            (context as? RecipesActivity)?.startActivityForResult(intent, Constants.REQUEST_CODE_RECIPES_DETAILS)
+            context.startActivity(intent)
         }
     }
 
@@ -71,49 +71,9 @@ class RecipesAdapter(
     /**
      * Update adapter when list of recipes added.
      */
-    fun addRecipes(recipesData: List<CookingRecipes>) {
-        val initPosition = recipesList.size
-        recipesList.addAll(recipesData)
-        notifyItemRangeInserted(initPosition, recipesList.size)
-    }
-
-    /**
-     * Update adapter when new recipes added.
-     */
-    fun addRecipesData(recipesData: CookingRecipes) {
-        val initPosition = recipesList.size
-        recipesList.add(recipesData)
-        notifyItemRangeInserted(initPosition, recipesList.size)
-    }
-
-    /**
-     * Update adapter when a recipes deleted.
-     */
-    fun deleteRecipesData(recipesData: CookingRecipes) {
-        val initPosition = recipesList.indexOf(recipesData)
-        recipesList.remove(recipesData)
-        notifyItemRemoved(initPosition)
-    }
-
-    /**
-     * Update adapter when recipes data changed.
-     */
-    fun updateRecipesData(recipesData: CookingRecipes) {
-        val initPosition = getIndex(recipesData.id!!)
-        recipesList.set(initPosition, recipesData)
-        notifyItemChanged(initPosition)
-    }
-
-    /**
-     * Get position of recycler adapter for given id.
-     */
-    private fun getIndex(id: Int): Int {
-        for ((index, cookingRecipes) in recipesList.withIndex()) {
-            if (cookingRecipes.id == id) {
-                return index
-            }
-        }
-        return -1
+    fun updateRecipes(recipesData: List<CookingRecipes>) {
+        recipesList = ArrayList(recipesData)
+        notifyDataSetChanged()
     }
 
     class RecipesViewHolder(private val binding: RecipesListItemBinding) : RecyclerView.ViewHolder(binding.root) {
