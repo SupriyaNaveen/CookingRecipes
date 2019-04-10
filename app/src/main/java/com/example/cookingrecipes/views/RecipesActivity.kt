@@ -63,6 +63,9 @@ class RecipesActivity : AppCompatActivity(), CoroutineScope {
         super.onCreate(savedInstanceState)
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipes)
 
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+
         mDataBinding.buttonAddRecipes.setOnClickListener {
             val intent = Intent(this, AddRecipesActivity::class.java)
             startActivity(intent)
@@ -79,6 +82,7 @@ class RecipesActivity : AppCompatActivity(), CoroutineScope {
 
     /**
      * Initialise the recycler view adapter.
+     * On swipe delete the recipes and update the mapping table.
      */
     private fun initializeRecycler() {
         val gridLayoutManager = GridLayoutManager(this, 1)
@@ -96,6 +100,7 @@ class RecipesActivity : AppCompatActivity(), CoroutineScope {
                 val position = viewHolder.adapterPosition
                 launch {
                     mRecipesViewModel.deleteRecipesData(mRecipesAdapter.recipesList[position])
+                    mRecipesViewModel.deleteMappingForRecipesId(mRecipesAdapter.recipesList[position].id!!)
                 }
             }
         }
@@ -142,6 +147,10 @@ class RecipesActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    /**
+     * Show confirmation dialog for all recipes delete.
+     * Once all recipes deleted, clear all mapping table as there is no recipes to mapping to.
+     */
     private fun showDeleteAllConfirmationDialog() {
         val builder = AlertDialog.Builder(this)
 
@@ -155,6 +164,7 @@ class RecipesActivity : AppCompatActivity(), CoroutineScope {
         builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
             launch {
                 mRecipesViewModel.deleteAllRecipesData()
+                mRecipesViewModel.deleteAllMappingData()
             }
         }
         builder.setNegativeButton(getString(com.example.cookingrecipes.R.string.cancel)) { dialogInterface: DialogInterface, _: Int ->

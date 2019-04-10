@@ -3,7 +3,9 @@ package com.example.cookingrecipes.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.cookingrecipes.model.RecipesModel
+import com.example.cookingrecipes.model.data.Category
 import com.example.cookingrecipes.model.data.CookingRecipes
+import com.example.cookingrecipes.model.data.RecipesCategoryMapping
 import javax.inject.Inject
 
 class RecipesViewModel @Inject constructor(private val recipesModel: RecipesModel) : ViewModel() {
@@ -30,6 +32,30 @@ class RecipesViewModel @Inject constructor(private val recipesModel: RecipesMode
 
     suspend fun deleteAllRecipesData() {
         recipesModel.deletesAllRecipes()
+    }
+
+    suspend fun getCategoriesList(): LiveData<List<Category>> {
+        return recipesModel.getCategoriesFromDb()
+    }
+
+    suspend fun insertRecipesCategoryMapping(recipesCategoryMapping: RecipesCategoryMapping): Long {
+        return recipesModel.insertRecipesCategoryMapping(recipesCategoryMapping)
+    }
+
+    suspend fun getRecipesCategoryMappingForRecipesId(recipesId: Int): RecipesCategoryMapping {
+        return recipesModel.getRecipesCategoryMappingForRecipesId(recipesId)
+    }
+
+    suspend fun deleteMappingForRecipesId(recipesId: Int): Int {
+        return recipesModel.deleteMappingForRecipesId(recipesId)
+    }
+
+    suspend fun updateMappingForRecipesId(recipesId: Int, categoryId: Int): Int {
+        return recipesModel.updateMappingForRecipesId(recipesId, categoryId)
+    }
+
+    suspend fun deleteAllMappingData() {
+        recipesModel.deleteAllMappingData()
     }
 }
 

@@ -6,9 +6,12 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.cookingrecipes.model.db.AppDatabase
+import com.example.cookingrecipes.model.db.CategoryDao
+import com.example.cookingrecipes.model.db.RecipesCategoryMappingDao
 import com.example.cookingrecipes.model.db.RecipesDao
 import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.utils.Utils
+import com.example.cookingrecipes.viewmodel.CategoryViewModelFactory
 import com.example.cookingrecipes.viewmodel.RecipesViewModelFactory
 import dagger.Module
 import dagger.Provides
@@ -52,9 +55,27 @@ class AppModule(val app: Application) {
 
     @Provides
     @Singleton
-    fun provideRecipesViewModelFactory(
-        factory: RecipesViewModelFactory
+    fun provideCategoriesViewModelFactory(
+            factory: CategoryViewModelFactory
     ): ViewModelProvider.Factory = factory
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(
+            database: AppDatabase
+    ): CategoryDao = database.categoryDao()
+
+    @Provides
+    @Singleton
+    fun provideRecipesViewModelFactory(
+            factory: RecipesViewModelFactory
+    ): ViewModelProvider.Factory = factory
+
+    @Provides
+    @Singleton
+    fun provideRecipesCategoryMapping(
+            database: AppDatabase
+    ): RecipesCategoryMappingDao = database.recipesCategoryMappingDao()
 
     @Provides
     @Singleton

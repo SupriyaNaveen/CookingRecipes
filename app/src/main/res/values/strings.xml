@@ -30,6 +30,18 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="error_no_recipes_to_delete">No recipes to delete</string>
-
+    <string name="action_recipes_all">All Recipes</string>
+    <string name="app_home">Home</string>
+    <string name="action_add_categories">Add Category</string>
+    <string name="error_message_empty_name">Category name empty</string>
+    <string name="hint_category_name">New category name</string>
+    <string name="category">Category</string>
+    <string name="action_delete_categories">Delete Category</string>
+    <string name="message_confirm_delete_category">Are you sure to delete the category : </string>
+    <string name="ok">Okay</string>
+    <string name="label_remove_category">Remove Category : </string>
+    <string name="title_new_category">Add Category</string>
+    <string name="title_update_category">Update Category</string>
+    <string name="error_message_same_name">Category name is same as old.</string>
 
 </resources>
