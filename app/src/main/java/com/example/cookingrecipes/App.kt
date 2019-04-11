@@ -4,8 +4,6 @@ import android.app.Activity
 import android.app.Application
 import com.example.cookingrecipes.di.DaggerApplicationComponent
 import com.example.cookingrecipes.di.module.AppModule
-import com.example.cookingrecipes.di.module.RestApiModule
-import com.example.cookingrecipes.utils.Constants
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -26,7 +24,7 @@ class App : Application(), HasActivityInjector {
 
         DaggerApplicationComponent.builder()
             .appModule(AppModule(this))
-            .restApiModule(RestApiModule(Constants.BASE_URL_REST_API))
+//            .restApiModule(RestApiModule(Constants.BASE_URL_REST_API))
             .build().inject(this)
     }
 

@@ -1,10 +1,12 @@
 package com.example.cookingrecipes.model
 
 import androidx.lifecycle.LiveData
-import com.example.cookingrecipes.model.api.RestApi
+import com.example.cookingrecipes.model.data.Category
 import com.example.cookingrecipes.model.data.CookingRecipes
+import com.example.cookingrecipes.model.data.RecipesCategoryMapping
+import com.example.cookingrecipes.model.db.CategoryDao
+import com.example.cookingrecipes.model.db.RecipesCategoryMappingDao
 import com.example.cookingrecipes.model.db.RecipesDao
-import com.example.cookingrecipes.utils.Utils
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,10 +17,9 @@ import javax.inject.Inject
  * Get recipes from Local DB for given offset, limit.
  */
 class RecipesModel @Inject constructor(
-        private val restApi: RestApi,
         private val recipesDao: RecipesDao,
-        private val utils: Utils
-) {
+        private val recipesCategoryMappingDao: RecipesCategoryMappingDao,
+        private val categoryDao: CategoryDao) {
 
     /**
      * Get recipes from web API.
@@ -79,6 +80,44 @@ class RecipesModel @Inject constructor(
     suspend fun addRecipesData(cookingRecipes: CookingRecipes): Long {
         return withContext(IO) {
             recipesDao.insertManual(cookingRecipes)
+        }
+    }
+
+    suspend fun deletesAllRecipes() {
+        withContext(IO) {
+            recipesDao.deleteAll()
+        }
+    }
+
+    suspend fun getCategoriesFromDb(): LiveData<List<Category>> {
+        return withContext(IO) { categoryDao.getCategories() }
+    }
+
+    suspend fun insertRecipesCategoryMapping(recipesCategoryMapping: RecipesCategoryMapping): Long {
+        return withContext(IO) {
+            recipesCategoryMappingDao.insertRecipesCategoryMapping(recipesCategoryMapping)
+        }
+    }
+
+    suspend fun getRecipesCategoryMappingForRecipesId(recipesId: Int): RecipesCategoryMapping {
+        return withContext(IO) { recipesCategoryMappingDao.getRecipesCategoryMappingForRecipesId(recipesId) }
+    }
+
+    suspend fun deleteMappingForRecipesId(recipesId: Int): Int {
+        return withContext(IO) {
+            recipesCategoryMappingDao.deleteMappingForRecipesId(recipesId)
+        }
+    }
+
+    suspend fun updateMappingForRecipesId(recipesId: Int, categoryId: Int): Int {
+        return withContext(IO) {
+            recipesCategoryMappingDao.updateMappingForRecipesId(recipesId, categoryId)
+        }
+    }
+
+    suspend fun deleteAllMappingData() {
+        withContext(IO) {
+            recipesCategoryMappingDao.deleteAllMappingData()
         }
     }
 }

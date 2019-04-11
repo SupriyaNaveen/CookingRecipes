@@ -1,53 +1,56 @@
 package com.example.cookingrecipes.model
 
-import com.example.cookingrecipes.model.api.RestApi
+import androidx.lifecycle.LiveData
+import com.example.cookingrecipes.model.data.Category
+import com.example.cookingrecipes.model.data.CookingRecipes
+import com.example.cookingrecipes.model.data.RecipesCategoryMapping
 import com.example.cookingrecipes.model.db.CategoryDao
+import com.example.cookingrecipes.model.db.RecipesCategoryMappingDao
+import com.example.cookingrecipes.model.db.RecipesDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
  *
  */
-class CategoryModel @Inject constructor(private val restApi: RestApi, private val categoryDao: CategoryDao) {
+class CategoryModel @Inject constructor(
+        private val recipesDao: RecipesDao,
+        private val categoryDao: CategoryDao,
+        private var recipesCategoryMappingDao: RecipesCategoryMappingDao) {
 
     /**
-     *
+     * Get all stored categories from db, which is live data.
      */
-//    fun getCategories(): Observable<List<Category>> {
-//        return Observable.concatArray(getCategoriesFromDb(), getCategoriesFromApi())
-//    }
+    suspend fun getCategoriesFromDb(): LiveData<List<Category>> {
+        return withContext(Dispatchers.IO) { categoryDao.getCategories() }
+    }
 
-    /**
-     *
-     */
-//    private fun getCategoriesFromDb(): Observable<List<Category>> {
-//        return categoryDao.getRecipes().filter { it.isNotEmpty() }
-//            .toObservable()
-//            .doOnNext {
-//                Timber.d("Dispatching ${it.size} users from DB...")
-//            }
-//    }
+    suspend fun addCategoryToDB(category: Category) {
+        withContext(Dispatchers.IO) { categoryDao.insert(category) }
+    }
 
-    /**
-     *
-     */
-//    private fun getCategoriesFromApi(): Observable<List<Category>> {
-//        return restApi.getCategories()
-//            .doOnNext {
-//                Timber.d("Dispatching ${it.size} users from API...")
-//                storeCategoriesInDb(it)
-//            }
-//    }
+    suspend fun getRecipesCategoryMappingForCategoryId(categoryId: Int): LiveData<List<RecipesCategoryMapping>> {
+        return withContext(Dispatchers.IO) {
+            recipesCategoryMappingDao.getRecipesCategoryMappingForCategoryId(categoryId)
+        }
+    }
 
-    /**
-     *
-     */
-//    private fun storeCategoriesInDb(recipes: List<Category>) {
-//        Observable.fromCallable { categoryDao.insertAll(recipes) }
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(Schedulers.io())
-//            .subscribe {
-//                Timber.d("Inserted ${recipes.size} users from API in DB...")
-//            }
-//    }
+    fun getRecipesWithListOfRecipeIds(idList: List<Int>): LiveData<List<CookingRecipes>> {
+        return recipesDao.getRecipesWithListOfRecipeIds(idList)
+    }
 
+    suspend fun deleteCategoryFromDB(category: Category): Int {
+        return withContext(Dispatchers.IO) {
+            //All recipes belongs to this category should be default category.
+            recipesCategoryMappingDao.updateMappingForCategoryId(category.id!!)
+            categoryDao.delete(category)
+        }
+    }
+
+    suspend fun updateCategoryToDB(categoryId: Int, newCategoryName: String) {
+        withContext(Dispatchers.IO) {
+            categoryDao.update(categoryId, newCategoryName)
+        }
+    }
 }

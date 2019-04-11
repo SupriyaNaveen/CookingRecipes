@@ -53,7 +53,7 @@ class RecipesAdapter(
         return RecipesViewHolder(itemView)
     }
 
-    private var recipesList = ArrayList<CookingRecipes>()
+    var recipesList = ArrayList<CookingRecipes>()
     private var context: Context
 
     init {

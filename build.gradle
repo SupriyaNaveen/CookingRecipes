@@ -17,7 +17,7 @@ buildscript {
         supportLibraryVersion = '1.1.0-alpha03'
         materialVersion = '1.0.0'
         recyclerViewVersion = '1.1.0-alpha03'
-        cardViewVersion = '1.1.0-alpha03'
+        cardViewVersion = '1.0.0'
         dagger2Version = '2.21'
         roomVersion = '2.1.0-alpha06'
         lifecycleVersion = '2.1.0-alpha03'

@@ -30,4 +30,10 @@ interface RecipesDao {
 
     @Query(value = "SELECT * FROM recipes WHERE id = :id")
     fun queryRecipesDetails(id: Int): CookingRecipes
+
+    @Query("SELECT * FROM recipes WHERE id IN (:idList)")
+    fun getRecipesWithListOfRecipeIds(idList: List<Int>): LiveData<List<CookingRecipes>>
+
+    @Query("DELETE FROM recipes")
+    fun deleteAll()
 }

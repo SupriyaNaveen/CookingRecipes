@@ -3,12 +3,19 @@ package com.example.cookingrecipes.views
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.cookingrecipes.R
 import com.example.cookingrecipes.databinding.ActivityRecipesAddBinding
+import com.example.cookingrecipes.model.data.Category
 import com.example.cookingrecipes.model.data.CookingRecipes
+import com.example.cookingrecipes.model.data.RecipesCategoryMapping
+import com.example.cookingrecipes.utils.Constants
 import com.example.cookingrecipes.viewmodel.RecipesViewModel
 import com.example.cookingrecipes.viewmodel.RecipesViewModelFactory
 import dagger.android.AndroidInjection
@@ -20,13 +27,16 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
+
 /**
  * Add recipes activity, allows the user to add CookingRecipes.
- * Recipes name, youtube link, desciption entered are added to local DB.
+ * Recipes name, youtube link, description entered are added to local DB.
+ * The selected category also updated to mapping table.
  * TODO: Add Recipes to REST API.
  */
 class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
 
+    private lateinit var category: Category
     //Init view model
     private lateinit var mRecipesAddViewModel: RecipesViewModel
 
@@ -68,7 +78,7 @@ class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
             dataBinding.textViewRecipeName.setText(extras.getString(Intent.EXTRA_SUBJECT))
         }
 
-        mRecipesAddViewModel = ViewModelProviders.of(this, mAddRecipesViewModelFactory).get(
+        mRecipesAddViewModel = ViewModelProviders.of(this, this.mAddRecipesViewModelFactory).get(
                 RecipesViewModel::class.java
         )
 
@@ -85,14 +95,47 @@ class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
                 launch {
                     val rowId = mRecipesAddViewModel.addRecipesDetails(cookingRecipes)
                     if (rowId > 0) {
+                        //Insert recipes category table
+                        val id = mRecipesAddViewModel.insertRecipesCategoryMapping(RecipesCategoryMapping(rowId.toInt(), category.id!!))
+                        Timber.d("Id = $id")
                         showRecipesAddedMessage()
                     } else {
-                        Timber.d("Row inserted id : $it")
+                        Timber.d("Row inserted failed id : $it")
                     }
                 }
             }
         }
+
+        populateCategoryList(intent.getIntExtra(Constants.CURRENT_CATEGORY_POS, 0))
     }
+
+    private fun populateCategoryList(categoryPosition: Int) {
+
+        launch {
+            mRecipesAddViewModel.getCategoriesList().observe(this@AddRecipesActivity, Observer {
+                //Category list can not be empty as default category added.
+                if (!it.isEmpty()) {
+                    val adapter = ArrayAdapter(this@AddRecipesActivity, android.R.layout.simple_spinner_item, it)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    dataBinding.spinnerRecipesCategory.adapter = adapter
+
+                    //Set the selected category if add is called from category page
+                    category = it[categoryPosition]
+                    dataBinding.spinnerRecipesCategory.setSelection(categoryPosition)
+
+                    dataBinding.spinnerRecipesCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                            category = it[position]
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>) {
+                        }
+                    }
+                }
+            })
+        }
+    }
+
 
     /**
      * Alert dialog to show the recipes added successfully.

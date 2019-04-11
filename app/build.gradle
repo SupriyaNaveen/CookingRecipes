@@ -44,7 +44,7 @@ dependencies {
 
     // Third party libraries
     implementation "androidx.recyclerview:recyclerview:$rootProject.recyclerViewVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.kotlinVersion"
+    implementation "androidx.cardview:cardview:$rootProject.cardViewVersion"
 
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
