@@ -4,8 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -34,9 +33,9 @@ import kotlin.coroutines.CoroutineContext
  * The selected category also updated to mapping table.
  * TODO: Add Recipes to REST API.
  */
-class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
+class AddRecipesActivity : AppCompatActivity(), CoroutineScope, MultiSelectSpinner.OnMultipleItemsSelectedListener {
 
-    private lateinit var category: Category
+    private var selectedCategoryList: ArrayList<Category> = ArrayList()
     //Init view model
     private lateinit var mRecipesAddViewModel: RecipesViewModel
 
@@ -79,7 +78,7 @@ class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
         }
 
         mRecipesAddViewModel = ViewModelProviders.of(this, this.mAddRecipesViewModelFactory).get(
-                RecipesViewModel::class.java
+            RecipesViewModel::class.java
         )
 
         dataBinding.buttonAddRecipes.setOnClickListener {
@@ -87,26 +86,34 @@ class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
             val isValidInput = isValidInput()
             if (isValidInput) {
                 val cookingRecipes = CookingRecipes(
-                        recipeName = dataBinding.textViewRecipeName.text.toString(),
-                        recipeLink = dataBinding.textViewRecipesLink.text.toString(),
-                        recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
+                    recipeName = dataBinding.textViewRecipeName.text.toString(),
+                    recipeLink = dataBinding.textViewRecipesLink.text.toString(),
+                    recipeDescription = dataBinding.textViewRecipesDescription.text.toString()
                 )
 
                 launch {
                     val rowId = mRecipesAddViewModel.addRecipesDetails(cookingRecipes)
                     if (rowId > 0) {
                         //Insert recipes category table
-                        val id = mRecipesAddViewModel.insertRecipesCategoryMapping(RecipesCategoryMapping(rowId.toInt(), category.id!!))
-                        Timber.d("Id = $id")
+                        val recipesCategoryMappingList = ArrayList<RecipesCategoryMapping>()
+                        for (category in selectedCategoryList) {
+                            recipesCategoryMappingList.add(RecipesCategoryMapping(rowId.toInt(), category.id!!))
+                        }
+                        mRecipesAddViewModel.insertRecipesCategoryMapping(recipesCategoryMappingList)
                         showRecipesAddedMessage()
                     } else {
+                        Toast.makeText(
+                            this@AddRecipesActivity,
+                            getString(R.string.error_message_add_recipes_failed),
+                            Toast.LENGTH_LONG
+                        ).show()
                         Timber.d("Row inserted failed id : $it")
                     }
                 }
             }
         }
 
-        populateCategoryList(intent.getIntExtra(Constants.CURRENT_CATEGORY_POS, 0))
+        populateCategoryList(intent.getIntExtra(Constants.CURRENT_CATEGORY_POS, -1))
     }
 
     private fun populateCategoryList(categoryPosition: Int) {
@@ -114,23 +121,21 @@ class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
         launch {
             mRecipesAddViewModel.getCategoriesList().observe(this@AddRecipesActivity, Observer {
                 //Category list can not be empty as default category added.
-                if (!it.isEmpty()) {
-                    val adapter = ArrayAdapter(this@AddRecipesActivity, android.R.layout.simple_spinner_item, it)
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    dataBinding.spinnerRecipesCategory.adapter = adapter
+                if (it.isEmpty()) {
+                    dataBinding.textViewSpinnerTitle.visibility = View.GONE
+                    dataBinding.spinnerRecipesCategory.visibility = View.GONE
+                } else {
+                    dataBinding.textViewSpinnerTitle.visibility = View.VISIBLE
+                    dataBinding.spinnerRecipesCategory.visibility = View.VISIBLE
+                    val multiSelectSpinner = dataBinding.spinnerRecipesCategory
 
-                    //Set the selected category if add is called from category page
-                    category = it[categoryPosition]
-                    dataBinding.spinnerRecipesCategory.setSelection(categoryPosition)
+                    //If add called from viewpager then that category selected.
+                    if (categoryPosition != -1)
+                        selectedCategoryList.add(it[categoryPosition])
 
-                    dataBinding.spinnerRecipesCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                            category = it[position]
-                        }
-
-                        override fun onNothingSelected(parent: AdapterView<*>) {
-                        }
-                    }
+                    multiSelectSpinner.setItems(ArrayList(it))
+                    multiSelectSpinner.setSelection(selectedCategoryList)
+                    multiSelectSpinner.setListener(this@AddRecipesActivity)
                 }
             })
         }
@@ -181,5 +186,9 @@ class AddRecipesActivity : AppCompatActivity(), CoroutineScope {
         }
 
         return isValid
+    }
+
+    override fun selectedCategories(selectedCategories: ArrayList<Category>) {
+        selectedCategoryList = selectedCategories
     }
 }

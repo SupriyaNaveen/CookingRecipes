@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -36,7 +34,7 @@ import kotlin.coroutines.CoroutineContext
  * Show the recipes details. On selection of link redirects to youtube app.
  * Recipes can be updated or deleted.
  */
-class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
+class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope, MultiSelectSpinner.OnMultipleItemsSelectedListener {
 
     //Init view model
     private lateinit var mRecipesDetailsViewModel: RecipesViewModel
@@ -76,7 +74,7 @@ class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         mRecipesDetailsViewModel = ViewModelProviders.of(this, this.mRecipesDetailsViewModelFactory).get(
-                RecipesViewModel::class.java
+            RecipesViewModel::class.java
         )
 
         //Get the recipe id from selected recipes. Load the recipe details.
@@ -120,10 +118,10 @@ class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
             val url = Utils.getYoutubeThumbnailUrlFromVideoUrl(mDataBinding.recipes!!.recipeLink.toString())
             try {
                 Picasso.get()
-                        .load(url)
-                        .placeholder(R.drawable.ic_kitchen_black_24dp)
-                        .error(R.drawable.ic_kitchen_black_24dp)
-                        .into(mDataBinding.imageViewPlayUrl)
+                    .load(url)
+                    .placeholder(R.drawable.ic_kitchen_black_24dp)
+                    .error(R.drawable.ic_kitchen_black_24dp)
+                    .into(mDataBinding.imageViewPlayUrl)
 
             } catch (e: MalformedURLException) {
                 e.printStackTrace()
@@ -149,8 +147,7 @@ class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
         R.id.action_delete -> {
             launch {
                 val rowId = mRecipesDetailsViewModel.deleteRecipesData(mDataBinding.recipes!!)
-                val rowMapId = mRecipesDetailsViewModel.deleteMappingForRecipesId(mDataBinding.recipes!!.id!!)
-                Timber.i("Deleted id's = $rowId and $rowMapId")
+                mRecipesDetailsViewModel.deleteMappingForRecipesId(mDataBinding.recipes!!.id!!)
                 if (rowId != -1)
                     finish()
             }
@@ -162,10 +159,7 @@ class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
 
             launch {
                 val rowId = mRecipesDetailsViewModel.updateRecipesData(mDataBinding.recipes!!)
-                if (category != null) {
-                    val rowMapId = mRecipesDetailsViewModel.updateMappingForRecipesId(mDataBinding.recipes!!.id!!, category!!.id!!)
-                    Timber.i("Updated id's = $rowId and $rowMapId")
-                }
+                mRecipesDetailsViewModel.updateMappingTable(mDataBinding.recipes!!.id, selectedCategoryList)
                 if (rowId != -1)
                     finish()
             }
@@ -177,38 +171,36 @@ class RecipesDetailsActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private var category: Category? = null
+    private var selectedCategoryList: ArrayList<Category> = ArrayList()
 
     private fun populateCategoryList(recipesId: Int) {
         launch {
             val recipesCategoryMapping = mRecipesDetailsViewModel.getRecipesCategoryMappingForRecipesId(recipesId)
             mRecipesDetailsViewModel.getCategoriesList().observe(this@RecipesDetailsActivity, Observer {
 
-                //Category list can not be null as we have "DEFAULT" category.
-                if (!it.isEmpty()) {
-                    val adapter = ArrayAdapter(this@RecipesDetailsActivity, android.R.layout.simple_spinner_item, it)
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    mDataBinding.spinnerRecipesCategory.adapter = adapter
+                if (it.isEmpty()) {
+                    mDataBinding.textViewSpinnerTitle.visibility = View.GONE
+                    mDataBinding.spinnerRecipesCategory.visibility = View.GONE
+                } else {
+                    mDataBinding.textViewSpinnerTitle.visibility = View.VISIBLE
+                    mDataBinding.spinnerRecipesCategory.visibility = View.VISIBLE
+                    val multiSelectSpinner = mDataBinding.spinnerRecipesCategory
+                    multiSelectSpinner.setItems(ArrayList(it))
+                    multiSelectSpinner.setListener(this@RecipesDetailsActivity)
 
                     //Set the default value of spinner
                     for (item in it) {
-                        if (item.id == recipesCategoryMapping.categoryId) {
-                            category = item
-                            mDataBinding.spinnerRecipesCategory.setSelection(adapter.getPosition(category))
+                        if (item.id in recipesCategoryMapping.map { it.categoryId }) {
+                            selectedCategoryList.add(item)
                         }
                     }
-
-                    //Spinner selected listener
-                    mDataBinding.spinnerRecipesCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                            category = it[position]
-                        }
-
-                        override fun onNothingSelected(parent: AdapterView<*>) {
-                        }
-                    }
+                    multiSelectSpinner.setSelection(selectedCategoryList)
                 }
             })
         }
+    }
+
+    override fun selectedCategories(selectedCategories: ArrayList<Category>) {
+        selectedCategoryList = selectedCategories
     }
 }

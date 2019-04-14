@@ -17,9 +17,10 @@ import javax.inject.Inject
  * Get recipes from Local DB for given offset, limit.
  */
 class RecipesModel @Inject constructor(
-        private val recipesDao: RecipesDao,
-        private val recipesCategoryMappingDao: RecipesCategoryMappingDao,
-        private val categoryDao: CategoryDao) {
+    private val recipesDao: RecipesDao,
+    private val recipesCategoryMappingDao: RecipesCategoryMappingDao,
+    private val categoryDao: CategoryDao
+) {
 
     /**
      * Get recipes from web API.
@@ -93,13 +94,13 @@ class RecipesModel @Inject constructor(
         return withContext(IO) { categoryDao.getCategories() }
     }
 
-    suspend fun insertRecipesCategoryMapping(recipesCategoryMapping: RecipesCategoryMapping): Long {
+    suspend fun insertRecipesCategoryMapping(recipesCategoryMapping: ArrayList<RecipesCategoryMapping>) {
         return withContext(IO) {
-            recipesCategoryMappingDao.insertRecipesCategoryMapping(recipesCategoryMapping)
+            recipesCategoryMappingDao.insertAll(recipesCategoryMapping)
         }
     }
 
-    suspend fun getRecipesCategoryMappingForRecipesId(recipesId: Int): RecipesCategoryMapping {
+    suspend fun getRecipesCategoryMappingForRecipesId(recipesId: Int): List<RecipesCategoryMapping> {
         return withContext(IO) { recipesCategoryMappingDao.getRecipesCategoryMappingForRecipesId(recipesId) }
     }
 
@@ -109,15 +110,28 @@ class RecipesModel @Inject constructor(
         }
     }
 
-    suspend fun updateMappingForRecipesId(recipesId: Int, categoryId: Int): Int {
-        return withContext(IO) {
-            recipesCategoryMappingDao.updateMappingForRecipesId(recipesId, categoryId)
-        }
-    }
-
     suspend fun deleteAllMappingData() {
         withContext(IO) {
             recipesCategoryMappingDao.deleteAllMappingData()
+        }
+    }
+
+    suspend fun updateMappingTable(recipesId: Int?, selectedCategoryList: ArrayList<Category>) {
+        withContext(IO) {
+            recipesCategoryMappingDao.deleteMappingForRecipesId(recipesId!!)
+            if (selectedCategoryList.size > 0) {
+
+                val recipesCategoryMappingList = ArrayList<RecipesCategoryMapping>()
+                for (category in selectedCategoryList) {
+                    recipesCategoryMappingList.add(
+                        RecipesCategoryMapping(
+                            recipesId,
+                            category.id!!
+                        )
+                    )
+                }
+                recipesCategoryMappingDao.insertAll(recipesCategoryMappingList)
+            }
         }
     }
 }

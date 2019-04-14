@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
@@ -64,7 +63,7 @@ class HomeActivity : AppCompatActivity(), CoroutineScope {
         setContentView(R.layout.activity_home)
 
         mCategoryViewModel = ViewModelProviders.of(this, this.mCategoriesViewModelFactory).get(
-                CategoryViewModel::class.java
+            CategoryViewModel::class.java
         )
 
         categoryPageAdpater = CategoriesPageAdapter(supportFragmentManager, ArrayList())
@@ -95,10 +94,6 @@ class HomeActivity : AppCompatActivity(), CoroutineScope {
 
     @SuppressLint("InflateParams")
     private fun showUpdateCategoryDialog() {
-        if (view_pager_category.currentItem == 0) {
-            Toast.makeText(this, "Can not update DEFAULT category.", Toast.LENGTH_LONG).show()
-            return
-        }
         val category = categoryPageAdpater.getCurrentCategory(view_pager_category.currentItem)
         val builder = AlertDialog.Builder(this)
         builder.setTitle(getString(R.string.title_update_category))
@@ -191,7 +186,8 @@ class HomeActivity : AppCompatActivity(), CoroutineScope {
 
         categoryEditText.onFocusChangeListener = OnFocusChangeListener { _, _ ->
             categoryEditText.post {
-                val inputMethodManager = this@HomeActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val inputMethodManager =
+                    this@HomeActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.showSoftInput(categoryEditText, InputMethodManager.SHOW_IMPLICIT)
             }
         }
@@ -232,10 +228,6 @@ class HomeActivity : AppCompatActivity(), CoroutineScope {
      * If yes, delete the category. All recipes belongs to that category goes to default.
      */
     private fun showDeleteCategoryDialog() {
-        if (view_pager_category.currentItem == 0) {
-            Toast.makeText(this, "Can not delete default category.", Toast.LENGTH_LONG).show()
-            return
-        }
         val builder = AlertDialog.Builder(this)
 
         val category = categoryPageAdpater.getCurrentCategory(view_pager_category.currentItem)
@@ -244,8 +236,10 @@ class HomeActivity : AppCompatActivity(), CoroutineScope {
         builder.setTitle(getString(R.string.label_remove_category) + category.categoryName.toUpperCase())
 
         // Display a message on alert dialog
-        builder.setMessage(getString(R.string.message_confirm_delete_category) + " "
-                + category.categoryName)
+        builder.setMessage(
+            getString(R.string.message_confirm_delete_category) + " "
+                    + category.categoryName
+        )
 
         // Set a positive button and its click listener on alert dialog
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
@@ -263,11 +257,5 @@ class HomeActivity : AppCompatActivity(), CoroutineScope {
 
         // Display the alert dialog on app interface
         dialog.show()
-    }
-
-    init {
-        launch {
-            mCategoryViewModel.addCategoryToDB(Category(0, "DEFAULT"))
-        }
     }
 }

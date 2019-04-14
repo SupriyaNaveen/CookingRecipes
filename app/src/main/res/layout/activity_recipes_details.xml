@@ -76,11 +76,11 @@
                     android:paddingTop="@dimen/dp16"
                     android:text="@string/category" />
 
-                <Spinner
-                    android:id="@+id/spinner_recipes_category"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/dp16" />
+                <com.example.cookingrecipes.views.MultiSelectSpinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:id="@+id/spinner_recipes_category"/>
 
             </LinearLayout>
 

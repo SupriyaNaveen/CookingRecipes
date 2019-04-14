@@ -38,11 +38,11 @@ class RecipesViewModel @Inject constructor(private val recipesModel: RecipesMode
         return recipesModel.getCategoriesFromDb()
     }
 
-    suspend fun insertRecipesCategoryMapping(recipesCategoryMapping: RecipesCategoryMapping): Long {
+    suspend fun insertRecipesCategoryMapping(recipesCategoryMapping: ArrayList<RecipesCategoryMapping>) {
         return recipesModel.insertRecipesCategoryMapping(recipesCategoryMapping)
     }
 
-    suspend fun getRecipesCategoryMappingForRecipesId(recipesId: Int): RecipesCategoryMapping {
+    suspend fun getRecipesCategoryMappingForRecipesId(recipesId: Int): List<RecipesCategoryMapping> {
         return recipesModel.getRecipesCategoryMappingForRecipesId(recipesId)
     }
 
@@ -50,12 +50,12 @@ class RecipesViewModel @Inject constructor(private val recipesModel: RecipesMode
         return recipesModel.deleteMappingForRecipesId(recipesId)
     }
 
-    suspend fun updateMappingForRecipesId(recipesId: Int, categoryId: Int): Int {
-        return recipesModel.updateMappingForRecipesId(recipesId, categoryId)
-    }
-
     suspend fun deleteAllMappingData() {
         recipesModel.deleteAllMappingData()
+    }
+
+    suspend fun updateMappingTable(recipesId: Int?, selectedCategoryList: ArrayList<Category>) {
+        recipesModel.updateMappingTable(recipesId, selectedCategoryList)
     }
 }
 

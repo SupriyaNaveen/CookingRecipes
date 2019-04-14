@@ -43,5 +43,6 @@
     <string name="title_new_category">Add Category</string>
     <string name="title_update_category">Update Category</string>
     <string name="error_message_same_name">Category name is same as old.</string>
+    <string name="error_message_add_recipes_failed">Recipes link already exists. Please check in All Recipes.</string>
 
 </resources>

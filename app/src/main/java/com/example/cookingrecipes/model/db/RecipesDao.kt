@@ -16,7 +16,7 @@ interface RecipesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(recipes: CookingRecipes): Long
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertManual(recipes: CookingRecipes): Long
 
     @Delete

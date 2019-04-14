@@ -42,8 +42,7 @@ class CategoryModel @Inject constructor(
 
     suspend fun deleteCategoryFromDB(category: Category): Int {
         return withContext(Dispatchers.IO) {
-            //All recipes belongs to this category should be default category.
-            recipesCategoryMappingDao.updateMappingForCategoryId(category.id!!)
+            recipesCategoryMappingDao.deleteMappingForCategoryId(category.id!!)
             categoryDao.delete(category)
         }
     }
