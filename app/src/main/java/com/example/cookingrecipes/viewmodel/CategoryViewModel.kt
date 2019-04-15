@@ -30,6 +30,10 @@ class CategoryViewModel @Inject constructor(private val categoryModel: CategoryM
         return categoryModel.deleteCategoryFromDB(category)
     }
 
+    suspend fun deleteAllCategoryFromDB() {
+        categoryModel.deleteAllCategoryFromDB()
+    }
+
     suspend fun updateCategoryToDB(categoryId: Int, newCategoryName: String) {
         categoryModel.updateCategoryToDB(categoryId, newCategoryName)
     }

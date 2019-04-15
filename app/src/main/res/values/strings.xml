@@ -1,14 +1,10 @@
 <resources>
     <string name="app_name">Recipes Book</string>
-    <string name="action_settings">Settings</string>
-    <string name="string_add_recipes">Add Recipes</string>
     <string name="recipes_details">Recipes Details</string>
-    <string name="recipes_category_items">Recipes Categories</string>
     <string name="recipes">Recipes</string>
     <string name="add_recipes">Add Recipes</string>
 
     <string name="lbl_recipes_name">Recipes Name</string>
-    <string name="colon">:</string>
     <string name="lbl_recipes_link">Recipes Link</string>
     <string name="lbl_recipes_desc">Recipes description</string>
 
@@ -20,29 +16,29 @@
     <string name="action_update">Update</string>
     <string name="done">Done</string>
 
-    <string name="error_add_recipes">Recipes link already exists.</string>
-    <string name="error_message_get_recipes_failed">Get recipes failed :</string>
-    <string name="error_message_up_to_date">Recipes details up to date.</string>
     <string name="add_recipes_success_message">Cooking recipes added successfully.</string>
-    <string name="error_message_delete_failed">Delete recipe failed.</string>
     <string name="action_delete_all">Delete All</string>
     <string name="message_confirm_delete">Do you really want to delete all recipes?</string>
+    <string name="message_confirm_category_delete">Do you really want to delete all categories?</string>
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="error_no_recipes_to_delete">No recipes to delete</string>
-    <string name="action_recipes_all">All Recipes</string>
-    <string name="app_home">Home</string>
-    <string name="action_add_categories">Add Category</string>
     <string name="error_message_empty_name">Category name empty</string>
     <string name="hint_category_name">New category name</string>
     <string name="category">Category</string>
-    <string name="action_delete_categories">Delete Category</string>
-    <string name="message_confirm_delete_category">Are you sure to delete the category : </string>
+    <string name="message_confirm_delete_category">Are you sure to delete the category :</string>
     <string name="ok">Okay</string>
-    <string name="label_remove_category">Remove Category : </string>
+    <string name="label_remove_category">Remove Category :</string>
     <string name="title_new_category">Add Category</string>
     <string name="title_update_category">Update Category</string>
-    <string name="error_message_same_name">Category name is same as old.</string>
     <string name="error_message_add_recipes_failed">Recipes link already exists. Please check in All Recipes.</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Cooking Recipes</string>
+    <string name="nav_header_subtitle">Manage your recipes and categories</string>
+    <string name="nav_header_desc">Desc</string>
+    <string name="manage_categories">Manage Categories</string>
+    <string name="error_no_categories">No categories added. Please go to Manage Categories to add Categories.</string>
 
 </resources>

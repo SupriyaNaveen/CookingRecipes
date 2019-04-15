@@ -1,9 +1,6 @@
 package com.example.cookingrecipes.di.module
 
-import com.example.cookingrecipes.views.AddRecipesActivity
-import com.example.cookingrecipes.views.HomeActivity
-import com.example.cookingrecipes.views.RecipesActivity
-import com.example.cookingrecipes.views.RecipesDetailsActivity
+import com.example.cookingrecipes.views.*
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -14,7 +11,7 @@ import dagger.android.ContributesAndroidInjector
 abstract class BuildersViewModule {
 
     @ContributesAndroidInjector
-    abstract fun contributeRecipesActivity(): RecipesActivity
+    abstract fun contributeRecipesActivity(): RecipesFragment
 
     @ContributesAndroidInjector
     abstract fun contributeRecipesDetailsActivity(): RecipesDetailsActivity
@@ -24,4 +21,13 @@ abstract class BuildersViewModule {
 
     @ContributesAndroidInjector
     abstract fun contributeHomeActivity(): HomeActivity
+
+    @ContributesAndroidInjector
+    abstract fun contributeCategoriesFragment(): CategoryFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeCategoriesRecipesFragment(): CategoriesRecipesFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeManageCategoriesFragment(): ManageCategoriesFragment
 }

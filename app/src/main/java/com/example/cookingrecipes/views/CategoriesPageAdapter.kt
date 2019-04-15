@@ -12,7 +12,7 @@ class CategoriesPageAdapter(fragmentManager: FragmentManager, categoryArray: Arr
     private var categoryList: ArrayList<Category> = categoryArray
 
     override fun getItem(position: Int): Fragment =
-            RecipesFragment.newInstance(position + 1, categoryList[position].id!!)
+        CategoriesRecipesFragment.newInstance(position + 1, categoryList[position].id!!)
 
     override fun getCount(): Int {
         return categoryList.size

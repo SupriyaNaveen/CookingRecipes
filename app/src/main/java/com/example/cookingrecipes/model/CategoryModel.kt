@@ -47,6 +47,14 @@ class CategoryModel @Inject constructor(
         }
     }
 
+    suspend fun deleteAllCategoryFromDB() {
+        return withContext(Dispatchers.IO) {
+            recipesCategoryMappingDao.deleteAllMappingData()
+            categoryDao.deleteAll()
+        }
+    }
+
+
     suspend fun updateCategoryToDB(categoryId: Int, newCategoryName: String) {
         withContext(Dispatchers.IO) {
             categoryDao.update(categoryId, newCategoryName)
